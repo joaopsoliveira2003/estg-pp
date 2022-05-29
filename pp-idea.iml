@@ -10,13 +10,10 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/moodle/PP.2122.MA02.Students.jar!/" />
+          <root url="jar://$MODULE_DIR$/src/PP.2122.MA02.Students.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/Downloads/moodle/PP.2122.MA02.Students.jar!/" />
-          <root url="jar://$USER_HOME$/Downloads/moodle/PP.2122.MA02.Students.jar!/" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
   </component>
