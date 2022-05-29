@@ -1,11 +1,11 @@
 /*
 * Nome: Rui Alexandre Borba Vitorino
-* Numero: 8190479
+* Número: 8190479
 * Turma: LSIRC12T1
 *
-* Nome: Joao Pedro Silva Oliveira
-* Numero: 8210291
-* Turma: LSIRC12T2
+* Nome: João Pedro Silva Oliveira
+* Número: 8210291
+* Turma: LSIRC11T2
 */
 
 package g6.ppacg6.auxiliary;
@@ -14,7 +14,7 @@ public class StringValidations {
     
     /**
      * Check if a given String is valid, with some default conditions
-     * @param string
+     * @param string - String to be checked
      * @return boolean
      * @throws StringIndexOutOfBoundsException - when the given String is bigger than 50 characters
      * OR the String is empty
@@ -34,8 +34,8 @@ public class StringValidations {
     
     /**
      * Check if a given String is valid, based on the conditions told by the caller
-     * @param string
-     * @param limitCharacters
+     * @param string - the String to be checked
+     * @param limitCharacters - the maximum number of characters that the String can have
      * @return boolean
      * @throws StringIndexOutOfBoundsException - when the String is bigger then the @limitCharacters
      * OR the String is empty

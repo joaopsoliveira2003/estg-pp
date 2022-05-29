@@ -1,12 +1,12 @@
 /*
-* Nome: Rui Alexandre Borba Vitorino
-* Numero: 8190479
-* Turma: LSIRC12T1
-*
-* Nome: Joao Pedro Silva Oliveira
-* Numero: 8210291
-* Turma: LSIRC12T2
-*/
+ * Nome: Rui Alexandre Borba Vitorino
+ * Número: 8190479
+ * Turma: LSIRC12T1
+ *
+ * Nome: João Pedro Silva Oliveira
+ * Número: 8210291
+ * Turma: LSIRC11T2
+ */
 
 package g6.ppacg6.main;
 
@@ -46,8 +46,10 @@ public class PPACG6 {
         Topic networking = new Topic("Networking");
         
         Equipment laptop = new Equipment(1, EquipmentEnum.COMPUTER);
+        Equipment projector = new Equipment(2, EquipmentEnum.PROJECTOR);
         Room room1 = new RoomImpl("Room1", 50);
         System.out.println(((RoomImpl)room1).addEquipment(laptop));
+        System.out.println(((RoomImpl)room1).addEquipment(projector));
         ((RoomImpl)room1).setEquipmentStatus(0, false); // Will throw error
         
         Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10), 
@@ -93,7 +95,7 @@ public class PPACG6 {
         }
         
         try {
-            System.out.println( ((ConferenceImpl)conference1).addSession(session1)  );   
+            System.out.println( ((ConferenceImpl)conference1).addSession(session1)  );
         } catch (Exception ex) {
             System.out.println(ex);
         }

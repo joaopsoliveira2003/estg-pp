@@ -1,12 +1,12 @@
 /*
-* Nome: Rui Alexandre Borba Vitorino
-* Numero: 8190479
-* Turma: LSIRC12T1
-*
-* Nome: Joao Pedro Silva Oliveira
-* Numero: 8210291
-* Turma: LSIRC12T2
-*/
+ * Nome: Rui Alexandre Borba Vitorino
+ * Número: 8190479
+ * Turma: LSIRC12T1
+ *
+ * Nome: João Pedro Silva Oliveira
+ * Número: 8210291
+ * Turma: LSIRC11T2
+ */
 
 package g6.ppacg6.enumerations;
 
@@ -20,11 +20,11 @@ public enum DegreeEnum {
      */
     public static String toString(DegreeEnum degree) {
         return switch(degree) {
-            case CTESP -> "Curso Tecnico Superior Profissional";
+            case CTESP -> "Curso Técnico Superior Profissional";
             case LICENCIATURA -> "Licenciatura";
             case MESTRADO -> "Mestrado";
             case DOUTORAMENTO -> "Doutoramento";
-            case POS_DOUTORAMENTO -> "Pos-Doutoramento";
+            case POS_DOUTORAMENTO -> "Pós-Doutoramento";
         };
     }
 }
