@@ -7,13 +7,16 @@
  * Número: 8210291
  * Turma: LSIRC11T2
  */
-package g6.ppacg6;
+package g6.ppacg6.implementations;
 
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
+import g6.ppacg6.classes.Equipment;
+import g6.ppacg6.classes.Theme;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 

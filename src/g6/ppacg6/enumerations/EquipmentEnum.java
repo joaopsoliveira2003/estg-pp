@@ -15,7 +15,7 @@ public enum EquipmentEnum {
     
      /**
      * Return a more visual representation of a given course
-     * @param equip
+     * @param equip - EquipmentEnum
      * @return String
      */
     public static String toString(EquipmentEnum equip) {

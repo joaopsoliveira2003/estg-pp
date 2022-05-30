@@ -8,7 +8,7 @@
  * Turma: LSIRC11T2
  */
 
-package g6.ppacg6;
+package g6.ppacg6.classes;
 
 public class Topic {
     

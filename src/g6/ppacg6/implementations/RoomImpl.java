@@ -8,11 +8,13 @@
  * Turma: LSIRC11T2
  */
 
-package g6.ppacg6;
+package g6.ppacg6.implementations;
 
 import g6.ppacg6.auxiliary.StringValidations;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.RoomException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
+import g6.ppacg6.classes.Equipment;
+import g6.ppacg6.exceptions.EquipmentException;
 
 public class RoomImpl implements Room {
 
@@ -109,8 +111,13 @@ public class RoomImpl implements Room {
     }
     
     
-    public boolean addEquipment(Equipment equipment) throws NullPointerException {
-        if (equipment == null) throw new NullPointerException();
+    public boolean addEquipment(Equipment equipment) throws EquipmentException {
+
+        try {
+            if (equipment == null) throw new NullPointerException();
+        } catch (NullPointerException e) {
+            throw new EquipmentException("Coudn't add the specified equipment.");
+        }
         
         if (nEquipments == equipments.length) return false;
         
@@ -122,13 +129,11 @@ public class RoomImpl implements Room {
         return true;
     }   
     
-    public int addEquipment(Equipment[] equipmentsToAdd) {
+    public int addEquipment(Equipment[] equipmentsToAdd) throws EquipmentException {
         int x = 0;
         
         for ( Equipment equipment : equipmentsToAdd ) {
-            if ( addEquipment(equipment) ) {
-                x++;
-            }
+            if (addEquipment(equipment)) x++;
         }
         return x;
     }
@@ -161,15 +166,13 @@ public class RoomImpl implements Room {
         return x;
     }
     
-    public void setEquipmentStatus(int i, boolean status) {
+    public void setEquipmentStatus(int i, boolean status) throws EquipmentException {
         if ( nEquipments == 0 ) return;
         
         try {
             if ( this.equipments[i] == null ) throw new NullPointerException();
-        } catch (NullPointerException ex) {
-            throw new NullPointerException("Couldn't find the specified Equipment");
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            throw new ArrayIndexOutOfBoundsException("Couldn't find the specified Equipment");
+        } catch (Exception ex) {
+            throw new EquipmentException("Couldn't find the specified Equipment");
         }
         
         this.equipments[i].setHasProblems(!status);
@@ -197,7 +200,9 @@ public class RoomImpl implements Room {
         if (getClass() != obj.getClass()) return false;
         
         final RoomImpl other = (RoomImpl) obj;
-        return this.id == other.id;
+        if ( this.id == other.id ) return true;
+
+        return ( this.name.equals(other.name) );
     }
 
     @Override

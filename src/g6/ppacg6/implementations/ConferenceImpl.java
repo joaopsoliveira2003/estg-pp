@@ -8,7 +8,7 @@
  * Turma: LSIRC11T2
  */
 
-package g6.ppacg6;
+package g6.ppacg6.implementations;
 
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 
@@ -20,6 +20,7 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
+import g6.ppacg6.classes.Presenter;
 
 import java.time.LocalDateTime;
 
@@ -156,7 +157,7 @@ public class ConferenceImpl implements Conference {
             throw new ConferenceException("Couldn't find the Session to remove.");
         }
         
-        //sessions[i] = null;
+        sessions[i] = null;
 
         for ( int x = i; x < nSessions - 1; x++ ) {
             if ( sessions[x] == null ) {
@@ -258,7 +259,7 @@ public class ConferenceImpl implements Conference {
         Participant[] speakerParticipants = new Participant[nParticipants];
         
         for (int x = 0; x < nParticipants; x++) {
-            if ( this.participants[x] instanceof Presenter ) {
+            if ( this.participants[x] instanceof Presenter) {
                 speakerParticipants[x] = this.participants[x];
             }
         }
@@ -267,12 +268,13 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Session[] getRoomSessions(int i, LocalDateTime ldt, LocalDateTime ldt1) throws ConferenceException {
-        Session[] tempSessions = new Session[nSessions];
+        Session[] tempSessions = new Session[this.nSessions];
         
-        for ( int x = 0; x < nSessions; x++ ) {
-            if ( sessions[x].getRoom().getId() == i ) {
-                if ( sessions[x].getStartTime().isAfter(ldt) && ((SessionImpl)sessions[x]).getEndTime().isBefore(ldt1) ) {
-                    tempSessions[x] = sessions[x];
+        for ( int x = 0; x < this.nSessions; x++ ) {
+            if ( this.sessions[x].getRoom().getId() == i ) {
+                if ( this.sessions[x].getStartTime().isAfter(ldt) &&
+                        ((SessionImpl)this.sessions[x]).getEndTime().isBefore(ldt1) ) {
+                    tempSessions[x] = this.sessions[x];
                 }
             }
         }
@@ -281,14 +283,34 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Room[] getRooms() {
-        Room[] tempRooms = new Room[nSessions];
-        
-        for ( int x = 0; x < nSessions; x++ ) {
-            tempRooms[x] = sessions[x].getRoom();
+        Room[] tempRooms = new Room[this.nSessions];
+        int nRooms = 0;
+        boolean found;
+        for ( int x = 0; x < this.nSessions; x++ ) {
+            tempRooms[x] = this.sessions[x].getRoom();
         }
-        return tempRooms;
+
+        for (int x = 1; x < tempRooms.length; x++) {
+            found = false;
+            for (int y = 0; y < nRooms; y++) {
+                if (tempRooms[x].equals(tempRooms[y])) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                tempRooms[nRooms++] = tempRooms[x];
+            }
+        }
+
+        Room[] rooms = new Room[nRooms];
+        for ( int x = 0; x < nRooms; x++ ) {
+            rooms[x] = tempRooms[x];
+        }
+        return rooms;
     }
 
+    //TODO: falar com o stor tbm destes 2?
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -304,14 +326,39 @@ public class ConferenceImpl implements Conference {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    //TODO: falar com o stor sobre a parte dos participantes
     @Override
     public Statistics[] getNumberOfParticipantsBySession() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Statistics[] tempStatistics = new Statistics[nSessions];
+        for ( int x = 0; x < nSessions; x++ ) {
+            tempStatistics[x] = new StatisticsImpl(sessions[x].getName(), this.getParticipants().length);
+        }
+        return tempStatistics;
     }
 
     @Override
     public Statistics[] getNumberOfSessionsByRoom() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Room[] rooms = this.getRooms();
+        int nRooms = rooms.length;
+        Statistics[] tempStatistics = new Statistics[nRooms];
+        int[] sessionsByRoom = new int[nRooms];
+
+        for ( int x = 0; x < nRooms; x++ ) {
+            sessionsByRoom[x] = 0;
+        }
+
+        for (int x = 0; x < nSessions; x++) {
+            for (int y = 0; y < nRooms; y++) {
+                if (this.sessions[x].getRoom().equals(rooms[y])) {
+                    sessionsByRoom[y]++;
+                }
+            }
+        }
+
+        for (int x = 0; x < nRooms; x++) {
+            tempStatistics[x] = new StatisticsImpl(rooms[x].getName(), sessionsByRoom[x]);
+        }
+        return tempStatistics;
     }
 
 }

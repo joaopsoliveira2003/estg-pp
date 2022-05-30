@@ -8,7 +8,7 @@
  * Turma: LSIRC11T2
  */
 
-package g6.ppacg6;
+package g6.ppacg6.classes;
 
 public class Paper {
     
@@ -21,9 +21,9 @@ public class Paper {
 
     /**
      * Constructor for a Research Paper/("trabalho do Orador")
-     * @param title
-     * @param theme
-     * @param topic 
+     * @param title - Title of the Paper
+     * @param theme - Theme of the Paper
+     * @param topic - Topic of the Paper
      */
     public Paper(String title, Theme theme, Topic topic) {
         this.id = ++CID;
@@ -51,7 +51,7 @@ public class Paper {
 
     /**
      * Set the title of the Paper
-     * @param title 
+     * @param title - String
      */
     public void setTitle(String title) {
         this.title = title;
@@ -67,7 +67,7 @@ public class Paper {
 
     /**
      * Set the Theme of the Paper
-     * @param theme 
+     * @param theme - Theme
      */
     public void setTheme(Theme theme) {
         this.theme = theme;
@@ -83,7 +83,7 @@ public class Paper {
 
     /**
      * Set the Topic of the Paper
-     * @param topic 
+     * @param topic - Topic
      */
     public void setTopic(Topic topic) {
         this.topic = topic;
@@ -104,9 +104,9 @@ public class Paper {
         if (getClass() != obj.getClass()) return false;
         
         final Paper other = (Paper) obj;
-        if (this.id == other.id) return false;
+        if (this.id == other.id) return true;
         
-        return ( this.title.equals(other) );
+        return ( this.title.equals(other.title) );
     }
 
     /**

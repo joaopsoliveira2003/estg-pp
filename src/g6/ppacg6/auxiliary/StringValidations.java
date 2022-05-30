@@ -22,10 +22,10 @@ public class StringValidations {
      */
     public static boolean isValidString(String string) throws
             StringIndexOutOfBoundsException, NullPointerException {
-        if (string == null) throw new NullPointerException();
-        if (string.length() >= 50) {
+        if ( string == null ) throw new NullPointerException();
+        if ( string.length() >= 50 ) {
             throw new StringIndexOutOfBoundsException();
-        } else if (string.length() <= 0) {
+        } else if ( string.isBlank() || string.isEmpty() ) {
             throw new StringIndexOutOfBoundsException();
         } else {
             return true;
@@ -43,10 +43,10 @@ public class StringValidations {
      */
     public static boolean isValidString(String string, int limitCharacters) throws
             StringIndexOutOfBoundsException, NullPointerException {
-        if (string == null) throw new NullPointerException();
-        if (string.length() >= limitCharacters) {
+        if ( string == null ) throw new NullPointerException();
+        if ( string.length() >= limitCharacters ) {
             throw new StringIndexOutOfBoundsException();
-        } else if (string.length() <= 0) {
+        } else if ( string.isBlank() || string.isEmpty() ) {
             throw new StringIndexOutOfBoundsException();
         } else {
             return true;

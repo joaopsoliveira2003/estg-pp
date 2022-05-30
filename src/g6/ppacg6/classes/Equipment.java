@@ -8,7 +8,7 @@
  * Turma: LSIRC11T2
  */
 
-package g6.ppacg6;
+package g6.ppacg6.classes;
 
 import g6.ppacg6.enumerations.EquipmentEnum;
 
@@ -73,7 +73,7 @@ public class Equipment {
 
     /**
      * Change the hasProblems field of the Equipment
-     * @param hasProblems 
+     * @param hasProblems - boolean
      */
     public void setHasProblems(boolean hasProblems) {
         this.hasProblems = hasProblems;
@@ -96,8 +96,8 @@ public class Equipment {
         
         final Equipment other = (Equipment) obj;
         if (this.id == other.id) return true;
-        
-        return ( this.equipment.equals(other) );
+        //compare type of equipment by the EquipmentEnum
+        return this.equipment == other.equipment;
     }
 
     

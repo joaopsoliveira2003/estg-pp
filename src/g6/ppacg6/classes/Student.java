@@ -7,7 +7,7 @@
  * Número: 8210291
  * Turma: LSIRC11T2
  */
-package g6.ppacg6;
+package g6.ppacg6.classes;
 
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import g6.ppacg6.enumerations.CourseEnum;
