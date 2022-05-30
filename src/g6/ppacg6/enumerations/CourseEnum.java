@@ -15,7 +15,7 @@ public enum CourseEnum {
     
     /**
      * Return a more visual representation of a given course
-     * @param course
+     * @param course - CourseEnum
      * @return String
      */
     public static String toString(CourseEnum course) {

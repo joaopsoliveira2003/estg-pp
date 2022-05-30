@@ -18,7 +18,7 @@ public class Topic {
 
     /**
      * Constructor for the Topic
-     * @param topic
+     * @param topic - Name of the Topic
      */
     public Topic(String topic) {
         this.id = ++CID;
@@ -44,7 +44,7 @@ public class Topic {
 
     /**
      * Set the topic
-     * @param topic 
+     * @param topic - String
      */
     public void setTopic(String topic) {
         this.topic = topic;
@@ -53,7 +53,7 @@ public class Topic {
 
     /**
      * Compare two Topic(s), by ID and topic
-     * @param obj
+     * @param obj - Topic
      * @return boolean
      */
     @Override
@@ -68,7 +68,7 @@ public class Topic {
         
         if (this.id == other.id) return true;
         
-        return (this.topic.equals(other));
+        return (this.topic.equals(other.topic));
     }
 
 

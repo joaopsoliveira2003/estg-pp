@@ -15,7 +15,7 @@ public enum FieldEnum {
     
      /**
      * Return a more visual representation of a given field
-     * @param field
+     * @param field - FieldEnum
      * @return String
      */
     public static String toString(FieldEnum field) {

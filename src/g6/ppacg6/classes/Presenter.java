@@ -31,11 +31,10 @@ public class Presenter implements Participant {
 
     /**
      * Constructor of the Presenter
-     * @param name
-     * @param bio
-     * @param degree
-     * @param expertIn 
-     * @param participantNumber
+     * @param name - name of the Presenter
+     * @param bio - bio of the Presenter
+     * @param degree - degree of the Presenter
+     * @param expertIn - level of expertise of the Presenter
      */
     public Presenter(String name, String bio, DegreeEnum degree, FieldEnum expertIn) {
         this.id = ++CID;
@@ -123,7 +122,7 @@ public class Presenter implements Participant {
     
     /**
      * Find a given Paper of the Presenter
-     * @param paper
+     * @param paper - Paper to find
      * @return int
      */
     private int findPaper(Paper paper) {
@@ -140,7 +139,7 @@ public class Presenter implements Participant {
     
     /**
      * Add a Paper to the array papers[] of the Presenter
-     * @param paper
+     * @param paper - Paper to add
      * @return boolean
      */
     public boolean addPaper(Paper paper) {
@@ -158,7 +157,7 @@ public class Presenter implements Participant {
     
     /**
      * Add an array of Paper[] to the array papers[] of the Presenter
-     * @param papers
+     * @param papers - array of Paper to add
      * @return int - number of papers successfully added
      */
     public int addPaper(Paper[] papers) {
@@ -175,7 +174,7 @@ public class Presenter implements Participant {
     
     /**
      * Remove a given Paper from the array papers[] of the Presenter
-     * @param paper
+     * @param paper - Paper to remove
      * @return boolean
      * @throws NullPointerException - If the given paper is null
      */
@@ -198,7 +197,7 @@ public class Presenter implements Participant {
     
     /**
      * Remove a given array of papers[] of the array papers[] of the Presenter
-     * @param papers
+     * @param papers - array of Paper to remove
      * @return int - the number of successfully removed papers
      */
     public int delPaper(Paper[] papers) {

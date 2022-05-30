@@ -65,7 +65,7 @@ public class Student implements Participant {
 
     /**
      * Set the course of the Student
-     * @param course 
+     * @param course - CourseEnum
      */
     public void setCourse(CourseEnum course) {
         this.course = course;
@@ -73,7 +73,7 @@ public class Student implements Participant {
 
     /**
      * Set the courseYear of the Student
-     * @param courseYear 
+     * @param courseYear - int
      */
     public void setCourseYear(int courseYear) {
         this.courseYear = courseYear;
@@ -81,8 +81,7 @@ public class Student implements Participant {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        return hash;
+        return 3;
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Theme {
 
     /**
      * Constructor for a Theme
-     * @param theme 
+     * @param theme - Name of the Theme
      */
     public Theme(String theme) {
         this.id = ++CID;
@@ -43,7 +43,7 @@ public class Theme {
 
     /**
      * Set the theme
-     * @param theme 
+     * @param theme - String
      */
     public void setTheme(String theme) {
         this.theme = theme;
@@ -51,7 +51,7 @@ public class Theme {
 
     /**
      * Get the number of topics of the Theme
-     * @return 
+     * @return nTopics - int
      */
     public int getnTopics() {
         return nTopics;
@@ -60,7 +60,7 @@ public class Theme {
     
     /**
      * Find a given Topic in the array topics[]
-     * @param topic
+     * @param topic - Topic to be found
      * @return int
      */
     private int findTopic(Topic topic) {
@@ -77,7 +77,7 @@ public class Theme {
     
     /**
      * Add a Topic to the array topics[]
-     * @param topic
+     * @param topic - Topic to be added
      * @return boolean
      */
     public boolean addTopic(Topic topic) {
@@ -95,8 +95,8 @@ public class Theme {
     
     /**
      * Add an array of Topic[] to the array topics[]
-     * @param topics
-     * @return 
+     * @param topics - array of Topic to be added
+     * @return x - number of topics successfully added
      */
     public int addTopic(Topic[] topics) {
         int x = 0;
@@ -112,7 +112,7 @@ public class Theme {
     
     /**
      * Remove a Topic from the array topics[]
-     * @param topic
+     * @param topic - Topic to be removed
      * @return boolean
      * @throws NullPointerException - if the given Topic is null
      */
@@ -135,7 +135,7 @@ public class Theme {
     
     /**
      * Remove an array Topic[] from the array topics[]
-     * @param topics
+     * @param topics - array of Topic to be removed
      * @return int - number of topics successfully removed
      */
     public int delTopic(Topic[] topics) {
@@ -172,7 +172,7 @@ public class Theme {
     /**
      * Compare two Theme(s), by ID and theme
      * If the @obj is not from the same Class, then return false
-     * @param obj
+     * @param obj - Object to be compared
      * @return boolean
      */
     @Override
@@ -187,7 +187,7 @@ public class Theme {
         
         if (this.id == other.id) return true;
         
-        return (this.theme.equals(other));
+        return (this.theme.equals(other.theme));
     }
 
 

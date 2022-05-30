@@ -15,7 +15,7 @@ public enum DegreeEnum {
     
      /**
      * Return a more visual representation of a given degree
-     * @param degree
+     * @param degree - DegreeEnum
      * @return String
      */
     public static String toString(DegreeEnum degree) {

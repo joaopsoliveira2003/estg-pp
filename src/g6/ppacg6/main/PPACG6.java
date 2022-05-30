@@ -10,6 +10,7 @@
 
 package g6.ppacg6.main;
 
+import estg.ipp.pt.tp02_conferencesystem.dashboards.Dashboard;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Conference;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
@@ -23,10 +24,7 @@ import g6.ppacg6.enumerations.DegreeEnum;
 import g6.ppacg6.enumerations.EquipmentEnum;
 import g6.ppacg6.enumerations.FieldEnum;
 import g6.ppacg6.exceptions.EquipmentException;
-import g6.ppacg6.implementations.ConferenceImpl;
-import g6.ppacg6.implementations.PresentationImpl;
-import g6.ppacg6.implementations.RoomImpl;
-import g6.ppacg6.implementations.SessionImpl;
+import g6.ppacg6.implementations.*;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -66,12 +64,12 @@ public class PPACG6 {
         Room room2 = new RoomImpl("Room2", 30);
         Room room3 = new RoomImpl("Room3", 40);
 
-        Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), room1);
-        Session session2 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 2, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 2, 1, 30), room1);
-        Session session3 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 2, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 3, 1, 30), room2);
+        Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2022, Month.MARCH, 1, 11, 0, 0),
+                LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0), room1);
+        Session session2 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0),
+                LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0), room1);
+        Session session3 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0),
+                LocalDateTime.of(2022, Month.MARCH, 1, 14, 0, 0), room2);
 
         Presentation presentation1 = new PresentationImpl("Presentation1",
                 LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
@@ -212,11 +210,15 @@ public class PPACG6 {
         }
         */
 
-        System.out.println("\n------------- Get Number of Sessions by Room ----------------");
+        System.out.println("------------- Get Number of Sessions by Room ----------------");
         for (Statistics s : conference1.getNumberOfSessionsByRoom()) {
             System.out.println(s.getDescription() + " " + s.getValue());
         }
 
+        System.out.println("------------- Get Schedule ----------------");
+        System.out.println(conference1.getSchedule());
 
+
+        //Dashboard.render();
     }
 }

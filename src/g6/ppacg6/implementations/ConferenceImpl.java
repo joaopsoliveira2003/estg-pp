@@ -23,6 +23,7 @@ import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 import g6.ppacg6.classes.Presenter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ConferenceImpl implements Conference {
     
@@ -168,7 +169,17 @@ public class ConferenceImpl implements Conference {
         sessions[--nSessions] = null;
     }
 
-    // TODO remove sessionS
+    public void removeSessions(Session[] sn) throws ConferenceException {
+        if (sn == null) throw new ConferenceException("The sessions to remove can't be null.");
+        try {
+            for ( Session ss : sn ) {
+                if (ss == null) throw new NullPointerException();
+                removeSession(findSession(ss));
+            }
+        } catch (NullPointerException ex) {
+            throw new ConferenceException("Couldn't find the Session to remove.");
+        }
+    }
     
     @Override
     public Session getSession(int i) throws ConferenceException {
@@ -310,7 +321,7 @@ public class ConferenceImpl implements Conference {
         return rooms;
     }
 
-    //TODO: falar com o stor tbm destes 2?
+    //TODO: falar com o stor tbm destes 2
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -323,7 +334,14 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public String getSchedule() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        StringBuilder sb = new StringBuilder();
+        for (Session session : this.sessions) {
+            if (session != null) {
+                sb.append(session.getName()).append(":\n\tStart: ").append(session.getStartTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))).append("\n\tEnd: ").append(((SessionImpl) session).getEndTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))).append("\n\tRoom: ").append(session.getRoom().getName()).append("\n");
+            }
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 
     //TODO: falar com o stor sobre a parte dos participantes
