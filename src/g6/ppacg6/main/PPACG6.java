@@ -20,11 +20,9 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 import g6.ppacg6.classes.*;
-import g6.ppacg6.enumerations.CourseEnum;
-import g6.ppacg6.enumerations.DegreeEnum;
-import g6.ppacg6.enumerations.EquipmentEnum;
-import g6.ppacg6.enumerations.FieldEnum;
+import g6.ppacg6.enumerations.*;
 import g6.ppacg6.implementations.*;
+import g6.ppacg6.interfaces.ConferenceManagement;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -36,13 +34,13 @@ import java.time.Month;
 public class PPACG6 {
 
     public static void main(String[] args) {
-        ParticipantImpl participant1 = new Student("S1", "Bio", CourseEnum.LSIRC, 1);
-        Participant participant2 = new Student("S2", "Bio", CourseEnum.LSIG, 2);
-        Participant participant3 = new Student("S3", "Bio", CourseEnum.LEI, 1);
+        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.VISITOR, CourseEnum.LSIRC, 1);
+        ParticipantImpl student2 = new Student("S2", "Bio", ParticipantTypeEnum.VISITOR, CourseEnum.LEI, 2);
+        ParticipantImpl student3 = new Student("S3", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LSIRC, 3);
 
-        Participant presenter1 = new Presenter("P1", "Bio", DegreeEnum.DOUTORAMENTO, FieldEnum.NETWORKING);
-        Participant presenter2 = new Presenter("P2", "Bio", DegreeEnum.DOUTORAMENTO, FieldEnum.COMPUTER_SCIENCE);
-        Participant presenter3 = new Presenter("P3", "Bio", DegreeEnum.MESTRADO, FieldEnum.CHEMISTRY);
+        ParticipantImpl speaker1 = new Professor("P1", "Bio", ParticipantTypeEnum.SPEAKER, DegreeEnum.DOUTORAMENTO, FieldEnum.COMPUTER_SCIENCE);
+        ParticipantImpl speaker2 = new Professor("P2", "Bio", ParticipantTypeEnum.SPEAKER, DegreeEnum.DOUTORAMENTO, FieldEnum.COMPUTER_SCIENCE);
+        ParticipantImpl speaker3 = new Professor("P3", "Bio", ParticipantTypeEnum.SPEAKER, DegreeEnum.DOUTORAMENTO, FieldEnum.COMPUTER_SCIENCE);
 
         Theme cybersecurity = new Theme("Cybersecurity");
         Theme softwaredelevoplment = new Theme("Software Development");
@@ -75,15 +73,15 @@ public class PPACG6 {
 
         Presentation presentation1 = new PresentationImpl("Presentation1",
                 LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), presenter1);
+                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), speaker1);
 
         Presentation presentation2 = new PresentationImpl("Presentation2",
                 LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), presenter2);
+                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), speaker2);
 
         Presentation presentation3 = new PresentationImpl("Presentation3",
                 LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), presenter3);
+                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), student1);
 
         Conference conference1 = new ConferenceImpl("Conf1", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.COMPUTER_SCIENCE.toString());
         Conference conference2 = new ConferenceImpl("Conf2", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.NETWORKING.toString());
@@ -113,26 +111,25 @@ public class PPACG6 {
 
         System.out.println("------------- Paper to Presenter ----------------");
         try {
-            System.out.println( ((Presenter)participant1).addPaper(paper1) );
+            System.out.println( ((Professor)speaker1).addPaper(paper1) );
         } catch (Exception ex) {
             System.out.println(ex);
         }
         try {
-            System.out.println( ((Presenter)presenter1).addPaper(paper2) );
+            System.out.println( ((Professor)speaker1).addPaper(paper1) );
         } catch (Exception ex) {
             System.out.println(ex);
         }
         try {
-            System.out.println( ((Presenter)presenter1).addPaper(paper3) );
+            System.out.println( ((Professor)speaker1).addPaper(paper2) );
         } catch (Exception ex) {
             System.out.println(ex);
         }
         try {
-            System.out.println( ((Presenter)presenter1).delPaper(paper1) );
+            System.out.println( ((Professor)speaker1).addPaper(paper3) );
         } catch (Exception ex) {
             System.out.println(ex);
         }
-        System.out.println(presenter1);
 
 
         System.out.println("------------- Add Sessions ----------------");
@@ -154,22 +151,22 @@ public class PPACG6 {
 
         System.out.println("------------- Add Participants ----------------");
         try {
-            conference1.checkIn(presenter1);
+            conference1.checkIn(student1);
         } catch (Exception ex) {
             System.out.println(ex);
         }
         try {
-            conference1.checkIn(presenter1);
+            conference1.checkIn(student2);
         } catch (Exception ex) {
             System.out.println(ex);
         }
         try {
-            conference1.checkIn(participant1);
+            conference1.checkIn(speaker1);
         } catch (Exception ex) {
             System.out.println(ex);
         }
         try {
-            conference1.checkIn(participant2);
+            conference1.checkIn(speaker2);
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -240,5 +237,20 @@ public class PPACG6 {
         System.out.println("------------- Get Schedule ----------------");
         System.out.println(conference1.getSchedule());
 
+        ConferenceManagementImpl cm = new ConferenceManagementImpl();
+
+        try {
+            System.out.println(cm.addConference((ConferenceImpl) conference1));
+            Dashboard.render(new String[]{JsonGenerator.generateNumberofSessionsbyRoom(conference1.getNumberOfSessionsByRoom())});
+        } catch ( Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("------------- Export File ----------------");
+        try {
+            conference1.generateSpeakerCertificates("test.txt");
+        } catch ( Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

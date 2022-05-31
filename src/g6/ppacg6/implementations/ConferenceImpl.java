@@ -21,7 +21,9 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
+import g6.ppacg6.enumerations.ParticipantTypeEnum;
 
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -293,7 +295,7 @@ public class ConferenceImpl implements Conference {
         Participant[] speakerParticipants = new Participant[nParticipants];
         
         for (int x = 0; x < nParticipants; x++) {
-            if ( this.participants[x] instanceof Presenter ) {
+            if ( ((ParticipantImpl)this.participants[x]).getParticipantType().equals(ParticipantTypeEnum.SPEAKER) ) {
                 speakerParticipants[x] = this.participants[x];
             }
         }
@@ -347,7 +349,19 @@ public class ConferenceImpl implements Conference {
     //file path
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // iterar sobre todos os participantes da CONFERENCIA e ver quais sao speaker
+        // para cada speaker gerar um certificado
+        Participant[] speakers = this.getSpeakerParticipants();
+
+        for ( int x = 0; x < speakers.length; x++ ) {
+            try {
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(string + speakers[x].getName()));
+                out.writeObject(speakers[x].toString());
+                out.close();
+            } catch (Exception e) {
+                throw new ConferenceException(e.getMessage());
+            }
+        }
     }
 
     @Override

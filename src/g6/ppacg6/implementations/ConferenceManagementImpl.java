@@ -21,6 +21,11 @@ public class ConferenceManagementImpl implements ConferenceManagement {
     private ConferenceImpl[] conferences;
     private static final int MAX_CONFERENCES = 10;
 
+    public ConferenceManagementImpl() {
+        this.nConferences = 0;
+        this.conferences = new ConferenceImpl[MAX_CONFERENCES];
+    }
+
     private void increaseConferenceArr() throws ConferenceException {
         ConferenceImpl[] tmpConferences = new ConferenceImpl[nConferences * 2];
 
@@ -57,7 +62,7 @@ public class ConferenceManagementImpl implements ConferenceManagement {
 
         int pos = findConference(conference);
 
-        if ( pos == -1 ) throw new ConferenceException("The Conference is already in the list");
+        if ( pos != -1 ) throw new ConferenceException("The Conference is already in the list");
 
         this.conferences[nConferences++] = conference;
         return true;
@@ -214,7 +219,7 @@ public class ConferenceManagementImpl implements ConferenceManagement {
             System.out.println(ex.getMessage());
         }
         obj.put("participants", conferenceParticipants);
-        return obj.toString();
+        return obj.toJSONString();
     }
 
     @Override

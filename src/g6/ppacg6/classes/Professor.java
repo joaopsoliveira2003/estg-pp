@@ -15,6 +15,8 @@ import g6.ppacg6.enumerations.FieldEnum;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
 import g6.ppacg6.implementations.ParticipantImpl;
 
+import java.util.Arrays;
+
 public class Professor extends ParticipantImpl {
     
     private Paper[] papers;
@@ -189,6 +191,17 @@ public class Professor extends ParticipantImpl {
         return x;
     }
 
-    // to string
-  
+    public Paper getPaper(int index) {
+        return papers[index];
+    }
+
+    @Override
+    public String toString() {
+        return "Professor{" +
+                "papers=[" + listPapers() +
+                "], nPapers=" + nPapers +
+                ", degree=" + degree +
+                ", expertIn=" + expertIn +
+                '}';
+    }
 }
