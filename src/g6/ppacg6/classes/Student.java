@@ -11,42 +11,23 @@ package g6.ppacg6.classes;
 
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import g6.ppacg6.enumerations.CourseEnum;
+import g6.ppacg6.enumerations.ParticipantTypeEnum;
+import g6.ppacg6.implementations.ParticipantImpl;
+
 import java.util.Objects;
 
-public class Student implements Participant {   
-    
-    private int id = 0;
-    private static int CID = 0;
-    
-    private String name;
-    private String bio;
+public class Student extends ParticipantImpl {
     
     private CourseEnum course;
     private int courseYear;
 
-    public Student(String name, String bio, CourseEnum course, int courseYear) {
-        this.id = ++CID;
-        this.name = name;
-        this.bio = bio;
+    public Student(String name, String bio, ParticipantTypeEnum participantType, CourseEnum course, int courseYear) {
+        super(name, bio, participantType);
         this.course = course;
         this.courseYear = courseYear;
     }
 
-    @Override
-    public int getId() {
-        return this.id;
-    }
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String getBio() {
-        return this.bio;
-    }
-    
     /**
      * Get the Course of the Student
      * @return CourseEnum
@@ -79,36 +60,9 @@ public class Student implements Participant {
         this.courseYear = courseYear;
     }
 
-    @Override
-    public int hashCode() {
-        return 3;
-    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if ( this == obj ) return true;
-        
-        if ( obj == null ) return false;
-        
-        if ( getClass() != obj.getClass() ) return false;
-        
-        final Student other = (Student) obj;
-        
-        if ( this.id == other.id ) return true;
+    //equals
 
-        return Objects.equals(this.name, other.name);
-    }
-
-    /**
-     * List all the properties of the Student
-     * @return String
-     */
-    @Override
-    public String toString() {
-        return "Student{" + "id=" + id + ", name=" + name + ", bio=" + bio + ", course=" + course + ", courseYear=" + courseYear + '}';
-    }
-
-    
-    
+    //toString
 
 }

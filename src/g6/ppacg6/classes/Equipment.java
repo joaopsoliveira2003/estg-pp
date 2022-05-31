@@ -10,7 +10,9 @@
 
 package g6.ppacg6.classes;
 
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 import g6.ppacg6.enumerations.EquipmentEnum;
+import g6.ppacg6.exceptions.EquipmentException;
 
 public class Equipment {
 
@@ -54,6 +56,7 @@ public class Equipment {
     public EquipmentEnum getEquipment() {
         return equipment;
     }
+
 
     /**
      * Set the type of the Equipment

@@ -10,6 +10,7 @@
 
 package g6.ppacg6.implementations;
 
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 import g6.ppacg6.auxiliary.StringValidations;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.RoomException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
@@ -96,7 +97,10 @@ public class RoomImpl implements Room {
             throw new NumberFormatException("You must specify an integer.");
         }
     }
-    
+
+    public int getnEquipments() {
+        return this.nEquipments;
+    }
     
     private int findEquipment(Equipment equipment) {
         int pos = -1, x = 0;
@@ -181,7 +185,19 @@ public class RoomImpl implements Room {
     public Equipment[] getEquipments() {
         return this.equipments;
     }
-    
+
+    public Equipment getEquipment(int i) throws EquipmentException {
+        if (nEquipments == 0) throw new EquipmentException("There are no Equipments in the Room.");
+
+        try {
+            if ( this.equipments[i] == null ) throw new ArrayIndexOutOfBoundsException();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new EquipmentException("Couldn't find the Equipment in the Room.");
+        }
+        return this.equipments[i];
+    }
+
+
     public String listEquipments() {
         String str = "";
         for ( Equipment equipment : this.equipments ) {

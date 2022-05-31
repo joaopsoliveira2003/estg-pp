@@ -31,9 +31,13 @@ public class SessionImpl implements Session {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     
-    private int nPresentations;
+    private int nPresentations = 0;
     private Presentation[] presentations;
     private static final int MAX_PRESENTATIONS = 10;
+
+    private int nParticipants = 0;
+    private Participant[] participants;
+    private static final int MAX_PARTICIPANTS = 10;
     
     private Theme sessionTheme;
     
@@ -49,6 +53,8 @@ public class SessionImpl implements Session {
         this.room = room;
         this.nPresentations = 0;
         this.presentations = new Presentation[MAX_PRESENTATIONS];
+        this.nParticipants = 0;
+        this.participants = new Participant[MAX_PARTICIPANTS];
     }
     
     
@@ -93,6 +99,9 @@ public class SessionImpl implements Session {
         return this.room;
     }
 
+    public int getnParticipants() {
+        return this.nParticipants;
+    }
     
     private int findPresentation(Presentation prsntn) {
         int pos = -1, x = 0;
@@ -124,7 +133,7 @@ public class SessionImpl implements Session {
         
         Equipment[] requiredEquipments = ((PresentationImpl)prsntn).getRequiredEquipments();
         Equipment[] roomEquipments = ((RoomImpl)room).getEquipments();
-        int nEquip = (requiredEquipments.length > roomEquipments.length) ? requiredEquipments.length : roomEquipments.length;
+        int nEquip = Math.max(requiredEquipments.length, roomEquipments.length);
         
         for ( int x = 0; x < nEquip; x++ ) {
             if ( requiredEquipments[x] == null ) break;
@@ -213,6 +222,58 @@ public class SessionImpl implements Session {
     @Override
     public int getNumberOfPresentations() {
         return this.nPresentations;
+    }
+
+    //equals
+
+    private int findParticipant(Participant participant) {
+        int pos = -1, x = 0;
+        if (nParticipants == 0) return pos;
+
+        while ( pos == -1 && x < nParticipants ) {
+            if ( this.participants[x].equals(participant) ) {
+                pos = x;
+            }
+            x++;
+        }
+        return pos;
+    }
+
+    public boolean addParticipant(Participant participant) throws SessionException {
+        if (participant == null) throw new SessionException("Can't add a Participant that is null");
+
+        if (nParticipants == participants.length) throw new
+        SessionException("Can't add more Participants to this Session");
+
+        int pos = findParticipant(participant);
+
+        if ( pos != -1 ) throw new SessionException("The Participant is already set in the Session");
+
+        participants[nParticipants++] = participant;
+        return true;
+    }
+
+    public boolean delParticipant(Participant participant) throws SessionException {
+        if (participant == null) throw new SessionException("Can't remove a Participant that is null");
+
+        int pos = findParticipant(participant);
+
+        if ( pos == -1 ) throw new SessionException("The Participant is not set in the Session");
+
+        for ( int x = pos; x < nParticipants - 1; x++ ) {
+            this.participants[x] = this.participants[x + 1];
+        }
+
+        participants[--nParticipants] = null;
+        return true;
+    }
+
+    public Participant[] getParticipants() throws SessionException {
+        try {
+            return this.participants;
+        } catch ( NullPointerException e ) {
+            throw new SessionException("There are no participants in the session.");
+        }
     }
 
     @Override

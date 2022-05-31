@@ -19,7 +19,6 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 
 import g6.ppacg6.auxiliary.StringValidations;
 import g6.ppacg6.classes.Equipment;
-import g6.ppacg6.classes.Presenter;
 import g6.ppacg6.exceptions.EquipmentException;
         
 import java.time.Duration;
@@ -137,6 +136,7 @@ public class PresentationImpl implements Presentation {
      * @param presenter - Presenter
      * @throws ParticipantException - when the Presenter is null or not of the Class Presenter
      */
+    /*
     public void setPresenter(Presenter presenter) throws ParticipantException {
         try {
             if (presenter == null) throw new NullPointerException("The Presenter can't be null");
@@ -148,7 +148,7 @@ public class PresentationImpl implements Presentation {
             this.presenter = presenter;
         }
     }
-
+    */
     /**
      * Get the number of required Equipments for the Presentation
      * @return int

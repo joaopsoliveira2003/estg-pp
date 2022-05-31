@@ -17,24 +17,26 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
+import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 import g6.ppacg6.classes.*;
 import g6.ppacg6.enumerations.CourseEnum;
 import g6.ppacg6.enumerations.DegreeEnum;
 import g6.ppacg6.enumerations.EquipmentEnum;
 import g6.ppacg6.enumerations.FieldEnum;
-import g6.ppacg6.exceptions.EquipmentException;
 import g6.ppacg6.implementations.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Arrays;
 
 
 public class PPACG6 {
 
-    public static void main(String[] args) throws EquipmentException {
-        Participant participant1 = new Student("S1", "Bio", CourseEnum.LSIRC, 1);
+    public static void main(String[] args) {
+        ParticipantImpl participant1 = new Student("S1", "Bio", CourseEnum.LSIRC, 1);
         Participant participant2 = new Student("S2", "Bio", CourseEnum.LSIG, 2);
         Participant participant3 = new Student("S3", "Bio", CourseEnum.LEI, 1);
 
@@ -68,7 +70,7 @@ public class PPACG6 {
                 LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0), room1);
         Session session2 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0),
                 LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0), room1);
-        Session session3 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0),
+        Session session3 = new SessionImpl("Session3", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0),
                 LocalDateTime.of(2022, Month.MARCH, 1, 14, 0, 0), room2);
 
         Presentation presentation1 = new PresentationImpl("Presentation1",
@@ -88,16 +90,20 @@ public class PPACG6 {
         Conference conference3 = new ConferenceImpl("Conf3", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.CHEMISTRY.toString());
 
         System.out.println("------------- Add Equipments ----------------");
-        System.out.println(((RoomImpl)room1).addEquipment(laptop));
-        System.out.println(((RoomImpl)room1).addEquipment(projector));
-        ((RoomImpl)room1).setEquipmentStatus(0, false); // Will throw error
+        try {
+            System.out.println(((RoomImpl) room1).addEquipment(laptop));
+            System.out.println(((RoomImpl) room1).addEquipment(projector));
+            ((RoomImpl) room1).setEquipmentStatus(0, false); // Will throw error
+        } catch ( Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         try {
             System.out.println( ((PresentationImpl)presentation1).addRequiredEquipment(laptop) );
         } catch (Exception ex) {
             System.out.println(ex);
         }
-        
+
         try {
             System.out.println( "> " + ((SessionImpl)session1).addPresentation(presentation1) );
         } catch (SessionException ex) {
@@ -129,6 +135,23 @@ public class PPACG6 {
         System.out.println(presenter1);
 
 
+        System.out.println("------------- Add Sessions ----------------");
+        try {
+            System.out.println( ((ConferenceImpl)conference1).addSession(session1)  );
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        try {
+            System.out.println( ((ConferenceImpl)conference1).addSession(session2)  );
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        try {
+            System.out.println( ((ConferenceImpl)conference1).addSession(session3)  );
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
         System.out.println("------------- Add Participants ----------------");
         try {
             conference1.checkIn(presenter1);
@@ -151,22 +174,16 @@ public class PPACG6 {
             System.out.println(ex);
         }
 
-        System.out.println("------------- Add Sessions ----------------");
+
+        System.out.println("------------- SAHGDHAJSOJODHYA---------------");
         try {
-            System.out.println( ((ConferenceImpl)conference1).addSession(session1)  );
-        } catch (Exception ex) {
-            System.out.println(ex);
+            for ( Participant p : ((SessionImpl) session1).getParticipants() ) {
+                System.out.println(p);
+            }
+        } catch ( Exception e) {
+            System.out.println(e.getMessage());
         }
-        try {
-            System.out.println( ((ConferenceImpl)conference1).addSession(session2)  );
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-        try {
-            System.out.println( ((ConferenceImpl)conference1).addSession(session3)  );
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
+
 
         System.out.println("------------- Get coisas ----------------");
         for ( Session s : conference1.getSessions() ) {
@@ -182,8 +199,8 @@ public class PPACG6 {
 
         System.out.println("\n------------- Get Room Sessions ----------------");
         try {
-            for ( Session rs : conference1.getRoomSessions(1, 
-                    LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 0), 
+            for ( Session rs : conference1.getRoomSessions(1,
+                    LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 0),
                     LocalDateTime.of(2022, Month.MARCH, 1, 1, 10, 0))) {
                 if (rs == null) break;
                 System.out.println(rs.toString());
@@ -215,10 +232,13 @@ public class PPACG6 {
             System.out.println(s.getDescription() + " " + s.getValue());
         }
 
+        System.out.println("------------- Get Number of Participants by Session ----------------");
+        for (Statistics s : conference1.getNumberOfParticipantsBySession()) {
+            System.out.println(s.getDescription() + " " + s.getValue());
+        }
+
         System.out.println("------------- Get Schedule ----------------");
         System.out.println(conference1.getSchedule());
 
-
-        //Dashboard.render();
     }
 }

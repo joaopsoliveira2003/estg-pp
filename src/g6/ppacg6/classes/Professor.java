@@ -10,17 +10,12 @@
 
 package g6.ppacg6.classes;
 
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import g6.ppacg6.enumerations.DegreeEnum;
 import g6.ppacg6.enumerations.FieldEnum;
+import g6.ppacg6.enumerations.ParticipantTypeEnum;
+import g6.ppacg6.implementations.ParticipantImpl;
 
-public class Presenter implements Participant {
-
-    private int id = 0;
-    private static int CID = 0;
-    
-    private String name;
-    private String bio;
+public class Professor extends ParticipantImpl {
     
     private Paper[] papers;
     private int nPapers;
@@ -36,30 +31,12 @@ public class Presenter implements Participant {
      * @param degree - degree of the Presenter
      * @param expertIn - level of expertise of the Presenter
      */
-    public Presenter(String name, String bio, DegreeEnum degree, FieldEnum expertIn) {
-        this.id = ++CID;
-        this.name = name;
-        this.bio = bio;
+    public Professor(String name, String bio, ParticipantTypeEnum participantType, DegreeEnum degree, FieldEnum expertIn) {
+        super(name, bio, participantType);
         this.nPapers = 0;
         this.papers = new Paper[MAX_PAPERS];
         this.degree = degree;
         this.expertIn = expertIn;
-    }
-
-    
-    @Override
-    public int getId() {
-        return this.id;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String getBio() {
-        return this.bio;
     }
     
     /**
@@ -212,29 +189,6 @@ public class Presenter implements Participant {
         return x;
     }
 
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        
-        if (obj == null) return false;
-        
-        if (getClass() != obj.getClass()) return false;
-        
-        final Presenter other = (Presenter) obj;
-        
-        if ( this.id == other.id ) return true;
-        
-        return this.degree == other.degree;
-    }
-
-    /**
-     * List all the properties of the Presenter
-     * @return String
-     */
-    @Override
-    public String toString() {
-        return "Presenter{" + "id=" + id + ", name=" + name + ", bio=" + bio + ", papers=[" + listPapers() + "], nPapers=" + nPapers + ", degree=" + degree + ", expertIn=" + expertIn + '}';
-    }
+    // to string
   
 }

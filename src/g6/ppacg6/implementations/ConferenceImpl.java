@@ -14,13 +14,13 @@ import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 
+import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Conference;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
-import g6.ppacg6.classes.Presenter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,6 +68,10 @@ public class ConferenceImpl implements Conference {
         return this.conferenceState;
     }
 
+    public int getnSessions() {
+        return this.nSessions;
+    }
+
     @Override
     public void changeState() {
         if (nSessions == 0) return;
@@ -86,6 +90,13 @@ public class ConferenceImpl implements Conference {
         return this.year.getYear();
     }
 
+    public LocalDateTime getDate() {
+        return this.year;
+    }
+
+    public int getnParticipants() {
+        return this.nParticipants;
+    }
     
     private void increaseSessionsArr() throws OutOfMemoryError {
         Session[] tmpSessions = new Session[nSessions * 2];
@@ -233,6 +244,9 @@ public class ConferenceImpl implements Conference {
     
     @Override
     public void checkIn(Participant p) throws ConferenceException {
+        if ( nSessions == 0 ) throw new ConferenceException("There are no Sessions in the Conference.");
+
+        // Add the Participant to the Conference
         if ( p == null ) throw new ConferenceException("The Participant can't be null");
         
         try {
@@ -246,6 +260,15 @@ public class ConferenceImpl implements Conference {
         if ( pos != -1 ) throw new ConferenceException("The Participant is already checked-in");
         
         this.participants[nParticipants++] = p;
+
+        // Add the Participant to all Sessions in the Conference
+        try {
+            for (int x = 0; x < nSessions; x++) {
+                ((SessionImpl) this.sessions[x]).addParticipant(p);
+            }
+        } catch (SessionException ex) {
+            throw new ConferenceException(ex.getMessage());
+        }
     }
 
     @Override
@@ -270,7 +293,7 @@ public class ConferenceImpl implements Conference {
         Participant[] speakerParticipants = new Participant[nParticipants];
         
         for (int x = 0; x < nParticipants; x++) {
-            if ( this.participants[x] instanceof Presenter) {
+            if ( this.participants[x] instanceof Presenter ) {
                 speakerParticipants[x] = this.participants[x];
             }
         }
@@ -321,7 +344,7 @@ public class ConferenceImpl implements Conference {
         return rooms;
     }
 
-    //TODO: falar com o stor tbm destes 2
+    //file path
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -344,12 +367,11 @@ public class ConferenceImpl implements Conference {
         return sb.toString();
     }
 
-    //TODO: falar com o stor sobre a parte dos participantes
     @Override
     public Statistics[] getNumberOfParticipantsBySession() {
         Statistics[] tempStatistics = new Statistics[nSessions];
         for ( int x = 0; x < nSessions; x++ ) {
-            tempStatistics[x] = new StatisticsImpl(sessions[x].getName(), this.getParticipants().length);
+            tempStatistics[x] = new StatisticsImpl(sessions[x].getName(), ((SessionImpl) sessions[x]).getnParticipants());
         }
         return tempStatistics;
     }
