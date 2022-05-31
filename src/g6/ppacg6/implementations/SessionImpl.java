@@ -118,6 +118,9 @@ public class SessionImpl implements Session {
     
     @Override
     public boolean addPresentation(Presentation prsntn) throws SessionException {
+
+        // CHECK IF THERE IS AVAILABLE TIME LEFT IN THE SESSION TO ADD THE PRESENTATION
+
         if (prsntn == null) throw new SessionException("Can't add a Presentation that is null");
         
         if (nPresentations == presentations.length) throw new 
@@ -207,7 +210,9 @@ public class SessionImpl implements Session {
     
     @Override
     public boolean isStarted() {
-        return (this.startTime.isAfter(LocalDateTime.now()));
+        // if on editing false
+        // else true, aka comecou ou acabou
+        return ( this.startTime.isAfter(LocalDateTime.now()) );
     }
 
     @Override

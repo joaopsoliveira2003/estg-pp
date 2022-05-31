@@ -63,6 +63,12 @@ public class Student extends ParticipantImpl {
 
     //equals
 
-    //toString
 
+    @Override
+    public String toString() {
+        return super.toString() + "Student{" +
+                "course=" + course +
+                ", courseYear=" + courseYear +
+                '}';
+    }
 }

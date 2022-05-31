@@ -34,8 +34,8 @@ import java.time.Month;
 public class PPACG6 {
 
     public static void main(String[] args) {
-        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.VISITOR, CourseEnum.LSIRC, 1);
-        ParticipantImpl student2 = new Student("S2", "Bio", ParticipantTypeEnum.VISITOR, CourseEnum.LEI, 2);
+        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LSIRC, 1);
+        ParticipantImpl student2 = new Student("S2", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LEI, 2);
         ParticipantImpl student3 = new Student("S3", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LSIRC, 3);
 
         ParticipantImpl speaker1 = new Professor("P1", "Bio", ParticipantTypeEnum.SPEAKER, DegreeEnum.DOUTORAMENTO, FieldEnum.COMPUTER_SCIENCE);
@@ -241,7 +241,16 @@ public class PPACG6 {
 
         try {
             System.out.println(cm.addConference((ConferenceImpl) conference1));
-            Dashboard.render(new String[]{JsonGenerator.generateNumberofSessionsbyRoom(conference1.getNumberOfSessionsByRoom())});
+            Dashboard.render(new String[]{JsonGenerator.generateNumberofSessionsbyRoom(conference1.getNumberOfSessionsByRoom()), JsonGenerator.generateNumberofParticipantsbySession(conference1.getNumberOfParticipantsBySession())});
+        } catch ( Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("------------- Get Speaker Participants ----------------");
+        try {
+            for (Participant p : conference1.getSpeakerParticipants()) {
+                System.out.println(p.toString());
+            }
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }
@@ -252,5 +261,10 @@ public class PPACG6 {
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }
+
+
+        System.out.println("------------- Test ----------------");
+        System.out.println(JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"}));
+        Dashboard.render(new String[]{JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"})});
     }
 }

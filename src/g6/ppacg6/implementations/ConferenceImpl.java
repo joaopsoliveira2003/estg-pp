@@ -128,6 +128,12 @@ public class ConferenceImpl implements Conference {
     
     @Override
     public boolean addSession(Session sn) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
+
+        // ver se a sala esta ocupada, considerando startTime e duration
+        // se participant ja esta a apresnetar em outra sessions no mesmo intervalo
+        // se uma apresentacao de esta sessao esta noutras sessoes
+
         if (sn == null) throw new ConferenceException("The session to add can't be null.");
         
         int pos = findSession(sn);
@@ -145,6 +151,8 @@ public class ConferenceImpl implements Conference {
     }
 
     public int addSession(Session[] sn) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
+
         int x = 0;
         
         try {
@@ -163,6 +171,8 @@ public class ConferenceImpl implements Conference {
     
     @Override
     public void removeSession(int i) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
+
         if (nSessions == 0) throw new ConferenceException("There are no Sessions to remove.");
         
         try {
@@ -183,6 +193,8 @@ public class ConferenceImpl implements Conference {
     }
 
     public void removeSessions(Session[] sn) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
+
         if (sn == null) throw new ConferenceException("The sessions to remove can't be null.");
         try {
             for ( Session ss : sn ) {
@@ -196,7 +208,6 @@ public class ConferenceImpl implements Conference {
     
     @Override
     public Session getSession(int i) throws ConferenceException {
-        
         if (nSessions == 0) throw new ConferenceException("There are no Sessions in Conferenec.");
         
         try {
@@ -246,21 +257,23 @@ public class ConferenceImpl implements Conference {
     
     @Override
     public void checkIn(Participant p) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.IN_PROGRESS)) ) throw new ConferenceException("The conference is not in progress.");
+
         if ( nSessions == 0 ) throw new ConferenceException("There are no Sessions in the Conference.");
 
         // Add the Participant to the Conference
         if ( p == null ) throw new ConferenceException("The Participant can't be null");
-        
+
+        int pos = findParticipant(p);
+
+        if ( pos != -1 ) throw new ConferenceException("The Participant is already checked-in");
+
         try {
             if ( nParticipants == this.participants.length ) increaseParticipantsArr();
         } catch (OutOfMemoryError ex) {
             throw new ConferenceException("Couldn't increase the allocated memory space to store the Participants");
         }
-        
-        int pos = findParticipant(p);
-        
-        if ( pos != -1 ) throw new ConferenceException("The Participant is already checked-in");
-        
+
         this.participants[nParticipants++] = p;
 
         // Add the Participant to all Sessions in the Conference
@@ -292,6 +305,7 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Participant[] getSpeakerParticipants() {
+        //remove duplicates ones
         Participant[] speakerParticipants = new Participant[nParticipants];
         
         for (int x = 0; x < nParticipants; x++) {
@@ -304,6 +318,10 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Session[] getRoomSessions(int i, LocalDateTime ldt, LocalDateTime ldt1) throws ConferenceException {
+        // se id nao existir
+        // intervalo tempo for invalido
+        // estado conference not inProgress
+
         Session[] tempSessions = new Session[this.nSessions];
         
         for ( int x = 0; x < this.nSessions; x++ ) {
@@ -349,13 +367,25 @@ public class ConferenceImpl implements Conference {
     //file path
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished.");
+
+        // GERAR EM JSON, nome, nomeCOnferencia, ano, titulo apresentacao, data
+        // string e nome da pasta
+        // erros se nao der para gerar o ficheiro
+        // nome ficheiro: idParticipant + idPresentation
+
         // iterar sobre todos os participantes da CONFERENCIA e ver quais sao speaker
         // para cada speaker gerar um certificado
         Participant[] speakers = this.getSpeakerParticipants();
 
+        File directory = new File("conferenceCertificates/");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
         for ( int x = 0; x < speakers.length; x++ ) {
             try {
-                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(string + speakers[x].getName()));
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(directory + speakers[x].getName() + string));
                 out.writeObject(speakers[x].toString());
                 out.close();
             } catch (Exception e) {
@@ -366,11 +396,19 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public void generateParticipantCertificates(String string) throws ConferenceException {
+        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished.");
+
+        // GERAR EM JSON, nome, nomeConferencia, ano
+        // string e nome da pasta
+        // erros se nao der para gerar o ficheiro
+        // nome ficheiro: idParticipant
+
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
     public String getSchedule() {
+        // ordenar e nao usar stringBuilder
         StringBuilder sb = new StringBuilder();
         for (Session session : this.sessions) {
             if (session != null) {
@@ -383,6 +421,8 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Statistics[] getNumberOfParticipantsBySession() {
+        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
+
         Statistics[] tempStatistics = new Statistics[nSessions];
         for ( int x = 0; x < nSessions; x++ ) {
             tempStatistics[x] = new StatisticsImpl(sessions[x].getName(), ((SessionImpl) sessions[x]).getnParticipants());
@@ -392,6 +432,9 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Statistics[] getNumberOfSessionsByRoom() {
+        // We check on JsonGenerator if the conference is finished, since we can't throw an exception here
+        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
+
         Room[] rooms = this.getRooms();
         int nRooms = rooms.length;
         Statistics[] tempStatistics = new Statistics[nRooms];

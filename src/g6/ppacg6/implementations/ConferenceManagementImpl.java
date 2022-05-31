@@ -1,5 +1,6 @@
 package g6.ppacg6.implementations;
 
+import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
@@ -116,6 +117,8 @@ public class ConferenceManagementImpl implements ConferenceManagement {
      * @throws ConferenceException
      */
     public String exportOne(ConferenceImpl conference) throws ConferenceException {
+        if (! (conference.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished");
+
         if ( conference == null ) throw new ConferenceException("Can't export a Conference that is null");
 
         if ( nConferences == 0 ) throw new ConferenceException("There are no Conferences to export");
@@ -220,12 +223,15 @@ public class ConferenceManagementImpl implements ConferenceManagement {
         }
         obj.put("participants", conferenceParticipants);
         return obj.toJSONString();
+
+
     }
 
     @Override
     public String export() throws IOException {
+        
         JSONObject obj = new JSONObject();
-
+        // save this JSON to a file
         return obj.toString();
     }
 }
