@@ -11,6 +11,7 @@
 package g6.ppacg6.main;
 
 import estg.ipp.pt.tp02_conferencesystem.dashboards.Dashboard;
+import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
 import g6.ppacg6.classes.*;
@@ -104,21 +105,6 @@ public class PPACG6 {
         } catch (Exception ex) {
             System.out.println(ex);
         }
-        try {
-            System.out.println( ((Professor)speaker1).addPaper(paper1) );
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-        try {
-            System.out.println( ((Professor)speaker1).addPaper(paper2) );
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-        try {
-            System.out.println( ((Professor)speaker1).addPaper(paper3) );
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
 
 
         System.out.println("------------- Add Sessions ----------------");
@@ -141,6 +127,12 @@ public class PPACG6 {
          */
 
         System.out.println("------------- Add Participants ----------------");
+        conference1.changeState();
+        try {
+            conference1.checkIn(student1);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
         try {
             conference1.checkIn(student1);
         } catch (Exception ex) {
@@ -160,16 +152,6 @@ public class PPACG6 {
             conference1.checkIn(speaker2);
         } catch (Exception ex) {
             System.out.println(ex);
-        }
-
-
-        System.out.println("------------- SAHGDHAJSOJODHYA---------------");
-        try {
-            for ( Participant p : ((SessionImpl) session1).getParticipants() ) {
-                System.out.println(p);
-            }
-        } catch ( Exception e) {
-            System.out.println(e.getMessage());
         }
 
 
@@ -253,7 +235,7 @@ public class PPACG6 {
             System.out.println(e.getMessage());
         }
 
-
+        /*
         System.out.println("------------- Test ----------------");
         //System.out.println(JsonGenerator.generateOutlabeledPie(new String[]{"asd", "dsa"}, new String[]{"1", "2"}));
         try {
@@ -262,5 +244,6 @@ public class PPACG6 {
             System.out.println(e.getMessage());
         }
         //Dashboard.render(new String[]{JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"})});
+        */
     }
 }

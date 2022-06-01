@@ -10,6 +10,7 @@
 
 package g6.ppacg6.auxiliary;
 
+/** Class responsible for the string validations */
 public class StringValidations {
     
     /**

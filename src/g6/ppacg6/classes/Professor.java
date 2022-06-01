@@ -217,7 +217,7 @@ public class Professor extends ParticipantImpl {
      */
     @Override
     public String toString() {
-        return "Professor{" +
+        return super.toString() + "Professor{" +
                 "papers=[" + listPapers() +
                 "], nPapers=" + nPapers +
                 ", degree=" + degree +

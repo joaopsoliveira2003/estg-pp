@@ -22,7 +22,7 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
-
+import g6.ppacg6.auxiliary.*;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -131,7 +131,28 @@ public class ConferenceImpl implements Conference {
         if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
 
         // ver se a sala esta ocupada, considerando startTime e duration
+        //sera?
+        for ( int sR = 0; sR < nSessions; sR++ ) {
+            if ( this.sessions[sR].getRoom().equals(sn.getRoom()) ) {
+                if ( this.sessions[sR].getStartTime().isBefore(sn.getStartTime()) &&
+                        this.sessions[sR].getDuration() == sn.getDuration() ) {
+                    throw new ConferenceException("The session is overlapping with another session.");
+                }
+            }
+        }
         // se participant ja esta a apresnetar em outra sessions no mesmo intervalo
+        // sera?
+        try {
+            for (int s = 0; s < nSessions; s++) {
+                if ( this.sessions[s].getStartTime().isAfter(sn.getStartTime()) ) {
+                    for (int sA = 0; sA < this.sessions[s].getNumberOfPresentations(); sA++) {
+                        this.sessions[s].getPresentation(sA).getPresenter().equals(sn.getPresentation(sA).getPresenter());
+                    }
+                }
+            }
+        } catch (SessionException e) {
+            throw new ConferenceException(e.getMessage());
+        }
         // se uma apresentacao de esta sessao esta noutras sessoes
 
         if (sn == null) throw new ConferenceException("The session to add can't be null.");
@@ -307,20 +328,46 @@ public class ConferenceImpl implements Conference {
     public Participant[] getSpeakerParticipants() {
         //remove duplicates ones
         Participant[] speakerParticipants = new Participant[nParticipants];
+
+        boolean canAdd = false;
+        int counter = 0;
         
         for (int x = 0; x < nParticipants; x++) {
             if ( ((ParticipantImpl)this.participants[x]).getParticipantType().equals(ParticipantTypeEnum.SPEAKER) ) {
-                speakerParticipants[x] = this.participants[x];
+                canAdd = true;
+            }
+            if (canAdd) {
+                speakerParticipants[counter++] = this.participants[x];
+                canAdd = false;
             }
         }
         return speakerParticipants;
     }
 
+    private boolean findRoom(int i) throws ConferenceException {
+        if ( nSessions == 0 ) throw new ConferenceException("There are no Sessions in the Conference.");
+
+        for ( int x = 0; x < nSessions; x++ ) {
+            if ( sessions[x].getRoom().getId() == i ) return true;
+        }
+        return false;
+    }
+
     @Override
     public Session[] getRoomSessions(int i, LocalDateTime ldt, LocalDateTime ldt1) throws ConferenceException {
-        // se id nao existir
-        // intervalo tempo for invalido
-        // estado conference not inProgress
+        if ( i < 0 ) throw new ConferenceException("The room ID can't be negative.");
+
+        if (!this.findRoom(i)) throw new ConferenceException("The room doesn't exist.");
+
+        if(! (this.conferenceState.equals(ConferenceState.IN_PROGRESS)) ) throw new ConferenceException("The conference is not in progress.");
+
+        if ( ldt == null || ldt1 == null ) throw new ConferenceException("The start and end times can't be null.");
+
+        try {
+            DateValidations.isValidDate(ldt, this.year);
+        } catch (ConferenceException ex) {
+            throw new ConferenceException(ex.getMessage());
+        }
 
         Session[] tempSessions = new Session[this.nSessions];
         

@@ -46,5 +46,8 @@ public abstract class ParticipantImpl implements Participant {
 
     // equals
 
-    //toString
+    @Override
+    public String toString() {
+        return "ParticipantImpl{" + "id=" + id + ", name='" + name + '\'' + ", bio='" + bio + '\'' + ", participantType=" + participantType + '}';
+    }
 }
