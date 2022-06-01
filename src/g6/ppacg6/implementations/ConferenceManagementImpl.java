@@ -52,6 +52,7 @@ public class ConferenceManagementImpl implements ConferenceManagement {
         return pos;
     }
 
+    @Override
     public boolean addConference(ConferenceImpl conference) throws ConferenceException {
         if ( conference == null ) throw new ConferenceException("The Conference is null");
 
@@ -82,6 +83,7 @@ public class ConferenceManagementImpl implements ConferenceManagement {
         return added;
     }
 
+    @Override
     public boolean delConference(ConferenceImpl conference) throws ConferenceException {
         if ( conference == null ) throw new ConferenceException("The Conference is null");
 

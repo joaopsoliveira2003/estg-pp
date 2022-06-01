@@ -64,8 +64,8 @@ public class PPACG6 {
         Room room2 = new RoomImpl("Room2", 30);
         Room room3 = new RoomImpl("Room3", 40);
 
-        Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2022, Month.MARCH, 1, 11, 0, 0),
-                LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0), room1);
+        Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2023, Month.MARCH, 1, 11, 0, 0),
+                LocalDateTime.of(2023, Month.MARCH, 1, 12, 0, 0), room1);
         Session session2 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0),
                 LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0), room1);
         Session session3 = new SessionImpl("Session3", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0),
@@ -83,7 +83,7 @@ public class PPACG6 {
                 LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
                 LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), student1);
 
-        Conference conference1 = new ConferenceImpl("Conf1", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.COMPUTER_SCIENCE.toString());
+        Conference conference1 = new ConferenceImpl("Conf1", LocalDateTime.of(2023, 1, 1, 10, 0), FieldEnum.COMPUTER_SCIENCE.toString());
         Conference conference2 = new ConferenceImpl("Conf2", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.NETWORKING.toString());
         Conference conference3 = new ConferenceImpl("Conf3", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.CHEMISTRY.toString());
 
@@ -138,6 +138,7 @@ public class PPACG6 {
         } catch (Exception ex) {
             System.out.println(ex);
         }
+        /*
         try {
             System.out.println( ((ConferenceImpl)conference1).addSession(session2)  );
         } catch (Exception ex) {
@@ -148,6 +149,7 @@ public class PPACG6 {
         } catch (Exception ex) {
             System.out.println(ex);
         }
+         */
 
         System.out.println("------------- Add Participants ----------------");
         try {
@@ -223,17 +225,18 @@ public class PPACG6 {
             System.out.println(s.toString());
         }
         */
-
+        /*
         System.out.println("------------- Get Number of Sessions by Room ----------------");
         for (Statistics s : conference1.getNumberOfSessionsByRoom()) {
             System.out.println(s.getDescription() + " " + s.getValue());
         }
-
+        */
+        /*
         System.out.println("------------- Get Number of Participants by Session ----------------");
         for (Statistics s : conference1.getNumberOfParticipantsBySession()) {
             System.out.println(s.getDescription() + " " + s.getValue());
         }
-
+        */
         System.out.println("------------- Get Schedule ----------------");
         System.out.println(conference1.getSchedule());
 
@@ -241,7 +244,6 @@ public class PPACG6 {
 
         try {
             System.out.println(cm.addConference((ConferenceImpl) conference1));
-            Dashboard.render(new String[]{JsonGenerator.generateNumberofSessionsbyRoom(conference1.getNumberOfSessionsByRoom()), JsonGenerator.generateNumberofParticipantsbySession(conference1.getNumberOfParticipantsBySession())});
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }
@@ -264,7 +266,12 @@ public class PPACG6 {
 
 
         System.out.println("------------- Test ----------------");
-        System.out.println(JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"}));
-        Dashboard.render(new String[]{JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"})});
+        //System.out.println(JsonGenerator.generateOutlabeledPie(new String[]{"asd", "dsa"}, new String[]{"1", "2"}));
+        try {
+            Dashboard.render(new String[]{JsonGenerator.generateNumberofSessionsbyRoom(conference1.getNumberOfSessionsByRoom()), JsonGenerator.generateNumberofParticipantsbySession(conference1.getNumberOfParticipantsBySession())});
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        //Dashboard.render(new String[]{JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"})});
     }
 }
