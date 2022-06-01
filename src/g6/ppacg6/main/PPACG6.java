@@ -12,21 +12,10 @@ package g6.ppacg6.main;
 
 import estg.ipp.pt.tp02_conferencesystem.dashboards.Dashboard;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Conference;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
-import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
-import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
+import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
 import g6.ppacg6.classes.*;
 import g6.ppacg6.enumerations.*;
 import g6.ppacg6.implementations.*;
-import g6.ppacg6.interfaces.ConferenceManagement;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
 

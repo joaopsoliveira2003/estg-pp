@@ -13,25 +13,34 @@ package g6.ppacg6.classes;
 import g6.ppacg6.enumerations.DegreeEnum;
 import g6.ppacg6.enumerations.FieldEnum;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
+import g6.ppacg6.exceptions.PaperException;
 import g6.ppacg6.implementations.ParticipantImpl;
 
-import java.util.Arrays;
-
+/** Class responsible for the professor */
 public class Professor extends ParticipantImpl {
-    
+
+    /** The professor's papers */
     private Paper[] papers;
+
+    /** The number of papers */
     private int nPapers;
+
+    /** The maximum of papers */
     private static int MAX_PAPERS = 10;
-    
+
+    /** The professor's degree */
     private DegreeEnum degree;
+
+    /** The professor's level of expertise */
     private FieldEnum expertIn;
 
     /**
-     * Constructor of the Presenter
-     * @param name - name of the Presenter
-     * @param bio - bio of the Presenter
-     * @param degree - degree of the Presenter
-     * @param expertIn - level of expertise of the Presenter
+     * Constructor of the professor
+     * @param name - name of the professor
+     * @param bio - bio of the professor
+     * @param degree - degree of the professor
+     * @param expertIn - level of expertise of the professor
+     * @apiNote <b>nPapers</b> is set to 0 by default and the <b>papers</b> array is set to the max ammount of papers
      */
     public Professor(String name, String bio, ParticipantTypeEnum participantType, DegreeEnum degree, FieldEnum expertIn) {
         super(name, bio, participantType);
@@ -42,7 +51,7 @@ public class Professor extends ParticipantImpl {
     }
     
     /**
-     * Get the number of Paper(s) of the Presenter
+     * Gets the number of Papers
      * @return int
      */
     public int getnPapers() {
@@ -50,7 +59,7 @@ public class Professor extends ParticipantImpl {
     }
 
     /**
-     * Get the Degree of the Presenter
+     * Gets the Degree
      * @return DegreeEnum
      */
     public DegreeEnum getDegree() {
@@ -58,15 +67,15 @@ public class Professor extends ParticipantImpl {
     }
 
     /**
-     * Set the Degree of the Presenter
-     * @param degree 
+     * Sets the Degree
+     * @param degree - DegreeEnum
      */
     public void setDegree(DegreeEnum degree) {
         this.degree = degree;
     }
 
     /**
-     * Get the Field of expertise of the Presenter
+     * Gets the level of expertise
      * @return FieldEnum
      */
     public FieldEnum getExpertIn() {
@@ -74,33 +83,32 @@ public class Professor extends ParticipantImpl {
     }
 
     /**
-     * Set the Field of expertise of the Presenter
-     * @param expertIn 
+     * Sets the level of expertise
+     * @param expertIn - FieldEnum
      */
     public void setExpertIn(FieldEnum expertIn) {
         this.expertIn = expertIn;
     }
     
     /**
-     * List all the Paper(s) of the Presenter
+     * Lists all the papers
      * @return String
      */
     public String listPapers() {
         String str = "";
         if (nPapers == 0) {
             str += "No Papers";
-            return str;
         } else {
             for (Paper paper : this.papers) {
                 if (paper == null) break;
                 str += paper.toString() + " ";
             }
-            return str;
         }
+        return str;
     }
     
     /**
-     * Find a given Paper of the Presenter
+     * Finds a specific paper
      * @param paper - Paper to find
      * @return int
      */
@@ -117,12 +125,12 @@ public class Professor extends ParticipantImpl {
     }
     
     /**
-     * Add a Paper to the array papers[] of the Presenter
-     * @param paper - Paper to add
+     * Adds a paper to the array papers[] of the professor
+     * @param paper paper to add
      * @return boolean
      */
-    public boolean addPaper(Paper paper) {
-        if (paper == null) throw new NullPointerException("The paper to add cant be null.");
+    public boolean addPaper(Paper paper) throws PaperException {
+        if (paper == null) throw new PaperException("The paper to add can't be null.");
         
         int pos = findPaper(paper);
         
@@ -135,32 +143,35 @@ public class Professor extends ParticipantImpl {
     }
     
     /**
-     * Add an array of Paper[] to the array papers[] of the Presenter
-     * @param papers - array of Paper to add
+     * Adds an array of Paper[] to the paper's array
+     * @param papers array of papers to add
      * @return int - number of papers successfully added
      */
     public int addPaper(Paper[] papers) {
         int x = 0;
         
         for ( Paper paper : papers ) {
-            if ( paper == null ) break;
-            if (addPaper(paper)) {
-                x++;
+            try {
+                if (addPaper(paper)) {
+                    x++;
+                }
+            } catch (PaperException ex) {
+                System.out.println(ex.getMessage());
             }
         }
         return x;
     }
     
     /**
-     * Remove a given Paper from the array papers[] of the Presenter
-     * @param paper - Paper to remove
+     * Removes a given paper from the paper's array
+     * @param paper Paper to remove
      * @return boolean
-     * @throws NullPointerException - If the given paper is null
+     * @throws NullPointerException if the given paper is null
      */
     public boolean delPaper(Paper paper) throws NullPointerException {
         if (nPapers == 0) return false;
         
-        if (paper == null) throw new NullPointerException("The topic to add cant be null.");
+        if (paper == null) throw new NullPointerException("The topic to add can't be null.");
         
         int pos = findPaper(paper);
         
@@ -175,8 +186,8 @@ public class Professor extends ParticipantImpl {
     }
     
     /**
-     * Remove a given array of papers[] of the array papers[] of the Presenter
-     * @param papers - array of Paper to remove
+     * Removes a given array of papers[] from the paper's array
+     * @param papers - array of Papers to remove
      * @return int - the number of successfully removed papers
      */
     public int delPaper(Paper[] papers) {
@@ -191,10 +202,19 @@ public class Professor extends ParticipantImpl {
         return x;
     }
 
+    /**
+     * Gets a specific paper based on the index
+     * @param index - index of the paper
+     * @return the Paper
+     */
     public Paper getPaper(int index) {
         return papers[index];
     }
 
+    /**
+     * Gets the properties of the professor
+     * @return string
+     */
     @Override
     public String toString() {
         return "Professor{" +

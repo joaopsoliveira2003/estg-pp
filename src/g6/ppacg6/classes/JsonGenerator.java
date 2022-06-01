@@ -1,17 +1,22 @@
 package g6.ppacg6.classes;
 
-import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
-import g6.ppacg6.implementations.StatisticsImpl;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * Class responsible for generating different JSON strings, graph formatted already
+ */
 public class JsonGenerator {
 
+    /**
+     * Generates a JSON string with the number of sessions by room
+     * @param statistics the statistics array
+     * @return the JSON string
+     */
     public static String generateNumberofSessionsbyRoom(Statistics[] statistics) throws ConferenceException {
-        // Since we dont have access to the Conference object, when we recevied a null array,
-        // its because the conference has finished, and we can now throw an exception
+        // workaround for checking if the conference is over
         if (statistics == null) {
             throw new ConferenceException("The conference has finished, no statistics available");
         }
@@ -62,6 +67,11 @@ public class JsonGenerator {
         return json.toJSONString();
     }
 
+    /**
+     * Generates a JSON string with the number of participants by session
+     * @param statistics the statistics array
+     * @return the JSON string
+     */
     public static String generateNumberofParticipantsbySession(Statistics[] statistics) {
         JSONObject json = new JSONObject();
         json.put("type", "bar");
@@ -94,6 +104,12 @@ public class JsonGenerator {
         return json.toJSONString();
     }
 
+    /**
+     * Generates a JSON string of a Outlabeled Pie chart
+     * @param labels the labels of the graph
+     * @param data the data of the graph
+     * @return the JSON string
+     */
     public static String generateOutlabeledPie(String[] labels, String[] data) {
         String cleanLabels = "", cleanData = "";
 
@@ -135,25 +151,5 @@ public class JsonGenerator {
                 "    }\n" +
                 "  }\n" +
                 "}", cleanLabels, cleanData);
-    }
-
-    public static String generateScheduleBar(String[] labels, String[] data) {
-        String cleanLabels = "", cleanData = "";
-
-        for (int i = 0; i < labels.length; i++) {
-            cleanLabels += "'" + labels[i] + "'";
-            if (i < labels.length - 1) {
-                cleanLabels += ",";
-            }
-        }
-
-        for (int i = 0; i < data.length; i++) {
-            cleanData += "'" + data[i] + "'";
-            if (i < data.length - 1) {
-                cleanData += ",";
-            }
-        }
-
-        return String.format("", cleanLabels, cleanData);
     }
 }
