@@ -2,11 +2,9 @@ package g6.ppacg6.implementations;
 
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
-import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
-import g6.ppacg6.classes.Equipment;
 import g6.ppacg6.classes.Professor;
 import g6.ppacg6.classes.Student;
 import g6.ppacg6.interfaces.ConferenceManagement;
@@ -16,17 +14,31 @@ import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+/** Class responsible for managing conferences */
 public class ConferenceManagementImpl implements ConferenceManagement {
 
+    /** Number of conferences */
     private int nConferences;
+
+    /** Array of conferences */
     private ConferenceImpl[] conferences;
+
+    /** Maximum number of conferences */
     private static final int MAX_CONFERENCES = 10;
 
+    /**
+     * Constructor of the class
+     * @apiNote <b>nConferences</b> is automatically set to 0 and <b>conferences</b> is automatically allocated to the maximum number of conferences
+     */
     public ConferenceManagementImpl() {
         this.nConferences = 0;
         this.conferences = new ConferenceImpl[MAX_CONFERENCES];
     }
 
+    /**
+     * Method responsible for expanding the array of conferences
+     * @throws ConferenceException if any memory allocation error occurs
+     */
     private void increaseConferenceArr() throws ConferenceException {
         ConferenceImpl[] tmpConferences = new ConferenceImpl[nConferences * 2];
 
