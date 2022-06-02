@@ -15,10 +15,7 @@ import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Conference;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
+import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
 
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
@@ -32,6 +29,7 @@ import org.json.simple.JSONObject;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalUnit;
 
 public class ConferenceImpl implements Conference, Exporter {
     
@@ -43,11 +41,11 @@ public class ConferenceImpl implements Conference, Exporter {
     
     private Session[] sessions;
     private int nSessions = 0;
-    private static final int MAX_SESSIONS = 10;
+    private static final int INITIAL_SESSIONS = 10;
     
     private Participant[] participants;
     private int nParticipants = 0;
-    private static final int MAX_PARTICIPANTS = 10;
+    private static final int INITIAL_PARTICIPANTS = 10;
     
     
     public ConferenceImpl(String name, LocalDateTime year, String field) {
@@ -56,9 +54,9 @@ public class ConferenceImpl implements Conference, Exporter {
         this.field = field;
         this.conferenceState = ConferenceState.ON_EDITING;
         this.nSessions = 0;
-        this.sessions = new Session[MAX_SESSIONS];
+        this.sessions = new Session[INITIAL_SESSIONS];
         this.nParticipants = 0;
-        this.participants = new Participant[MAX_PARTICIPANTS];
+        this.participants = new Participant[INITIAL_PARTICIPANTS];
     }
     
     @Override
@@ -140,45 +138,8 @@ public class ConferenceImpl implements Conference, Exporter {
     
     @Override
     public boolean addSession(Session sn) throws ConferenceException {
-        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) )
-            throw new ConferenceException("The conference is not in editing mode.");
-
-        /* ver se a sala esta ocupada, considerando startTime e duration
-
-        // loop nas sessions e salas, filtar as que o startTime before sn.startTime
-        // e sn.duration - que a session seja antes do endTime da session
-        // se sim, ver se a room e a mesma, e throw exception
-
-        for ( Session session : this.sessions ) {
-            if ( session == null ) break;
-            if ( sn.getStartTime().isAfter(session.getStartTime()) &&
-                    sn.getDuration() < ((SessionImpl)session).getMaxDurationPerPresentation() ) {
-                if ( sn.getRoom().equals(session.getRoom()) ) {
-                    throw new ConferenceException("The room is already occupied.");
-                }
-            }
-        }
-        */
-
-        // se participant ja esta a apresentar em outra sessions no mesmo intervalo
-        for ( Session session : this.sessions ) {
-            if ( session == null ) break;
-            if ( sn.getStartTime().isAfter(session.getStartTime()) &&
-                    ((SessionImpl)session).getEndTime().isBefore(((SessionImpl)session).getEndTime()) ) {
-                for ( Participant presenterSession : session.getAllPresenters() ) {
-                    for ( Participant presenterSn : session.getAllPresenters() ) {
-                        if ( presenterSn.equals(presenterSession) ) {
-                            throw new ConferenceException("The participant is already presenting in another session.");
-                        }
-                    }
-                }
-            }
-        }
-
-        // se uma apresentacao de esta sessao esta noutras sessoes
-
         if (sn == null) throw new ConferenceException("The session to add can't be null.");
-        
+
         int pos = findSession(sn);
 
         try {
@@ -188,8 +149,42 @@ public class ConferenceImpl implements Conference, Exporter {
         }
 
         if (pos != -1) return false;
-        /*if (pos != -1) throw new ConferenceException("The session already exists in " +
-                "the Conference.");*/
+
+        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) )
+            throw new ConferenceException("The conference is not in editing mode.");
+
+        // ver se a sala esta ocupada, considerando startTime e duration
+        for ( Session session : this.getSessions() ) {
+            if (session.getStartTime().plusMinutes(session.getDuration()).isAfter(sn.getStartTime())) {
+                System.out.println(session.getName());
+                if (session.getRoom().equals(sn.getRoom())) {
+                    throw new ConferenceException("The room is already occupied.");
+                }
+            }
+        }
+
+        for ( Session session : this.getSessions() ) {
+            if (session.getStartTime().plusMinutes(session.getDuration()).isAfter(sn.getStartTime())) {
+                for (Participant p : session.getAllPresenters()) {
+                    for (Participant pSn : sn.getAllPresenters()) {
+                        if (p.equals(pSn)) {
+                            throw new ConferenceException("The presenter is already in another session.");
+                        }
+                    }
+                }
+            }
+        }
+
+        // se uma apresentacao de esta sessao esta noutras sessoes
+        for ( Session session : this.getSessions() ) {
+            for (Presentation p : session.getPresentations()) {
+                for (Presentation pSn : sn.getPresentations()) {
+                    if (p.equals(pSn)) {
+                        throw new ConferenceException("The Presentation is already in another Session.");
+                    }
+                }
+            }
+        }
 
         sessions[nSessions++] = (Session) sn;
         return true;
@@ -253,6 +248,7 @@ public class ConferenceImpl implements Conference, Exporter {
     
     @Override
     public Session getSession(int i) throws ConferenceException {
+        // POR ID
         if (nSessions == 0) throw new ConferenceException("There are no Sessions in Conferenec.");
         
         try {
@@ -333,6 +329,7 @@ public class ConferenceImpl implements Conference, Exporter {
 
     @Override
     public Participant getParticipant(int i) throws ConferenceException {
+        // POR ID
         if (nParticipants == 0) throw new ConferenceException("There are no Participants checked-in");
         
         try {

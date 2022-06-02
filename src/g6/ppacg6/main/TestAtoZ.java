@@ -2,6 +2,7 @@ package g6.ppacg6.main;
 
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
+import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
 import g6.ppacg6.classes.*;
 import g6.ppacg6.enumerations.*;
@@ -46,23 +47,32 @@ public class TestAtoZ {
             e.printStackTrace();
         }
 
-        Presentation presentation1 = new PresentationImpl("Pres1", LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(10), professor1);
+        Presentation presentation1 = new PresentationImpl("Pres1",
+                LocalDateTime.of(2022, 10, 10, 10, 00),
+                LocalDateTime.of(2022, 10, 10, 10, 10), professor1);
 
-        Presentation presentation2 = new PresentationImpl("Pres2", LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(30), professor1);
+        Presentation presentation2 = new PresentationImpl("Pres2",
+                LocalDateTime.of(2022, 10, 10, 10, 20),
+                LocalDateTime.of(2022, 10, 10, 10, 30), professor2);
 
-        Session session1 = new SessionImpl("Session1", theme1, LocalDateTime.now(),
-                LocalDateTime.now().plusHours(1), r1);
-        Session session2 = new SessionImpl("Session2", theme1, LocalDateTime.now(),
-                LocalDateTime.now().plusHours(1), r1);
-        Session session3 = new SessionImpl("Session3", theme1, LocalDateTime.now(),
-                LocalDateTime.now().plusHours(1), r1);
+        Session session1 = new SessionImpl("Session1", theme1,
+                LocalDateTime.of(2022, 10, 10, 10, 00),
+                LocalDateTime.of(2022, 10, 10, 11, 00), r1);
+
+        Session session2 = new SessionImpl("Session2", theme1,
+                LocalDateTime.of(2022, 10, 10, 11, 15),
+                LocalDateTime.of(2022, 10, 10, 11, 30), r1);
+
+        Session session3 = new SessionImpl("Session3", theme1,
+                LocalDateTime.of(2022, 10, 10, 12, 00),
+                LocalDateTime.of(2022, 10, 10, 12, 20), r2);
 
 
         try {
-            ((SessionImpl)session2).addPresentation(presentation1);
+            ((SessionImpl)session1).addPresentation(presentation1);
             ((SessionImpl)session1).addPresentation(presentation2);
+            ((SessionImpl)session2).addPresentation(presentation2);
+            ((SessionImpl)session3).addPresentation(presentation2);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -72,13 +82,27 @@ public class TestAtoZ {
 
         //((ConferenceImpl)conference1).changeStateManual(ConferenceState.FINISHED);
 
+
+        for ( Participant p : session1.getAllPresenters()) {
+            System.out.println(p.toString());
+        }
+
+
+        System.out.println("1  -----------------------");
         try {
             System.out.println(((ConferenceImpl)conference1).addSession(session1));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        System.out.println("2  -----------------------");
         try {
             System.out.println(((ConferenceImpl)conference1).addSession(session2));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println("3 -----------------------");
+        try {
+            System.out.println(((ConferenceImpl)conference1).addSession(session3));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

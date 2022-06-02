@@ -16,6 +16,7 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 import g6.ppacg6.classes.Equipment;
+import g6.ppacg6.classes.Professor;
 import g6.ppacg6.classes.Theme;
 
 import java.time.Duration;
@@ -150,7 +151,13 @@ public class SessionImpl implements Session {
                 throw new SessionException("The Room of the Session does not have the required Equipments to accomodate the Presentation");
             }
         }
-        
+
+        try {
+            this.addParticipant(prsntn.getPresenter());
+        } catch (SessionException e) {
+            throw new SessionException(e.getMessage());
+        }
+
         presentations[nPresentations++] = prsntn;
         return true;
     }
@@ -180,22 +187,18 @@ public class SessionImpl implements Session {
     @Override
     public Presentation getPresentation(int i) throws SessionException {
         if (nPresentations == 0) throw new SessionException("There are no presentatins in the session.");
-        
-        try {
-            if ( presentations[i] == null ) throw new ArrayIndexOutOfBoundsException();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new SessionException("Couldnt find the presentation in the session.");
+
+        for ( int x = 0; x < nPresentations; x++ ) {
+            if (this.presentations[x].getId() == i) {
+                return presentations[i];
+            }
         }
         return presentations[i];
     }
 
     @Override
     public Presentation[] getPresentations() {
-        Presentation[] tempPresentions = new Presentation[this.nPresentations];
-        for (int x = 0; x < nPresentations; x++) {
-            tempPresentions[x] = presentations[x];
-        }
-        return tempPresentions;
+        return this.presentations;
     }
 
     public String listPresentations() {
@@ -226,7 +229,7 @@ public class SessionImpl implements Session {
 
     @Override
     public Participant[] getAllPresenters() {
-        Participant[] tempParticipant = new Participant[nParticipants];
+        Participant[] tempParticipant = new Participant[nPresentations];
         for ( int x = 0; x < nPresentations; x++ ) {
             tempParticipant[x] = presentations[x].getPresenter();
         }
