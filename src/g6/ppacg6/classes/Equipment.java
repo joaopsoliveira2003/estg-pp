@@ -62,7 +62,6 @@ public class Equipment {
         return equipment;
     }
 
-
     /**
      * Sets the type of the Equipment
      * @param equipment EquipmentEnum
@@ -71,11 +70,9 @@ public class Equipment {
         this.equipment = equipment;
     }
 
-
-
     /**
      * Compares two equipments, by ID and type of the EquipmentEnum
-     * @param obj the Equipment to compare
+     * @param obj the equipment to compare
      * @return true if the equipments are equal, false otherwise
      */
     @Override
@@ -99,7 +96,7 @@ public class Equipment {
      */
     @Override
     public String toString() {
-        return "Equipment{" + "id=" + id + ", equipment=" + equipment + '}';
+        return String.format("Equipment{id=%o, equipment=%s}", id, equipment);
     }
     
 }

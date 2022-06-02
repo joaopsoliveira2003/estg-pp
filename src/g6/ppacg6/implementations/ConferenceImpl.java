@@ -490,6 +490,7 @@ public class ConferenceImpl implements Conference, Exporter {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    //TODO: tirar string builder
     @Override
     public String getSchedule() {
         // ordenar e nao usar stringBuilder

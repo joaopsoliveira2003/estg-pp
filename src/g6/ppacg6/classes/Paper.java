@@ -33,7 +33,7 @@ public class Paper {
      * @param title title of the paper
      * @param theme theme of the paper
      * @param topic topic of the paper
-     * @apiNote <b>id</b> the id is based on the class's ID variable
+     * @apiNote the <b>id</b> is based on the CID variable
      */
     public Paper(String title, Theme theme, Topic topic) {
         this.id = ++CID;
@@ -42,7 +42,6 @@ public class Paper {
         this.topic = topic;
     }
 
-    
     /**
      * Gets the ID of the paper
      * @return int
@@ -61,7 +60,7 @@ public class Paper {
 
     /**
      * Sets the title of the paper
-     * @param title - String
+     * @param title String
      */
     public void setTitle(String title) {
         this.title = title;
@@ -77,7 +76,7 @@ public class Paper {
 
     /**
      * Set the theme of the paper
-     * @param theme - Theme
+     * @param theme Theme
      */
     public void setTheme(Theme theme) {
         this.theme = theme;
@@ -93,7 +92,7 @@ public class Paper {
 
     /**
      * Sets the topic of the paper
-     * @param topic - the topic
+     * @param topic Topic
      */
     public void setTopic(Topic topic) {
         this.topic = topic;
@@ -101,7 +100,7 @@ public class Paper {
 
     /**
      * Compares two papers, by ID and title
-     * @param obj - the other paper to compare
+     * @param obj the other paper to compare
      * @return boolean
      */
     @Override
@@ -120,7 +119,7 @@ public class Paper {
      */
     @Override
     public String toString() {
-        return "Paper{" + "title=" + title + ", theme=" + theme + ", topic=" + topic + ", id=" + id + '}';
+        return String.format("Paper={id=%o, title=%s, theme=%s, topic=%s}", id, title, theme, topic);
     }
 
 }

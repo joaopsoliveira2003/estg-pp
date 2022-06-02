@@ -20,14 +20,14 @@ import g6.ppacg6.implementations.ParticipantImpl;
 /** Class responsible for the professor */
 public class Professor extends ParticipantImpl {
 
-    /** The professor's papers */
-    private Paper[] papers;
-
     /** The number of papers */
     private int nPapers;
 
-    /** The maximum of papers */
-    private static int MAX_PAPERS = 10;
+    /** The professor's papers */
+    private Paper[] papers;
+
+    /** The initial ammount of papers for the array */
+    private static int INITIAL_PAPERS = 10;
 
     /** The professor's degree */
     private DegreeEnum degree;
@@ -37,16 +37,16 @@ public class Professor extends ParticipantImpl {
 
     /**
      * Constructor of the professor
-     * @param name - name of the professor
-     * @param bio - bio of the professor
-     * @param degree - degree of the professor
-     * @param expertIn - level of expertise of the professor
-     * @apiNote <b>nPapers</b> is set to 0 by default and the <b>papers</b> array is set to the max ammount of papers
+     * @param name name of the professor
+     * @param bio bio of the professor
+     * @param degree degree of the professor
+     * @param expertIn level of expertise of the professor
+     * @apiNote <b>nPapers</b> is set to 0 by default and the <b>papers</b> array is set to the initial ammount of papers
      */
     public Professor(String name, String bio, ParticipantTypeEnum participantType, DegreeEnum degree, FieldEnum expertIn) {
         super(name, bio, participantType);
         this.nPapers = 0;
-        this.papers = new Paper[MAX_PAPERS];
+        this.papers = new Paper[INITIAL_PAPERS];
         this.degree = degree;
         this.expertIn = expertIn;
     }
@@ -60,6 +60,22 @@ public class Professor extends ParticipantImpl {
     }
 
     /**
+     * Gets a specific paper based on the index
+     * @param index index of the paper
+     * @return the Paper
+     */
+    public Paper getPaper(int index) throws ArrayIndexOutOfBoundsException, ParticipantException {
+        try {
+            if (this.papers[index] == null) throw new NullPointerException();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ArrayIndexOutOfBoundsException("The index is out of bounds.");
+        } catch (NullPointerException e) {
+            throw new ParticipantException("Couldn't find the Paper");
+        }
+        return this.papers[index];
+    }
+
+    /**
      * Gets the Degree
      * @return DegreeEnum
      */
@@ -69,13 +85,13 @@ public class Professor extends ParticipantImpl {
 
     /**
      * Sets the Degree
-     * @param degree - DegreeEnum
+     * @param degree DegreeEnum
      */
     public void setDegree(DegreeEnum degree) throws ParticipantException {
         try {
-            if ( degree == null ) throw new ParticipantException();
-        } catch (ParticipantException e) {
-            throw new ParticipantException("Course cannot be null");
+            if ( degree == null ) throw new NullPointerException();
+        } catch (NullPointerException ex) {
+            throw new ParticipantException("The Course can't be null");
         }
         this.degree = degree;
     }
@@ -90,16 +106,15 @@ public class Professor extends ParticipantImpl {
 
     /**
      * Sets the level of expertise
-     * @param expertIn - FieldEnum
+     * @param expertIn FieldEnum
      */
     public void setExpertIn(FieldEnum expertIn) throws ParticipantException {
         try {
-            if ( expertIn == null ) throw new ParticipantException();
-        } catch (ParticipantException e) {
-            throw new ParticipantException("expertIn cannot be null");
-        } finally {
-            this.expertIn = expertIn;
+            if ( expertIn == null ) throw new NullPointerException();
+        } catch (NullPointerException ex) {
+            throw new ParticipantException("The expertIn can't be null");
         }
+        this.expertIn = expertIn;
     }
     
     /**
@@ -107,21 +122,18 @@ public class Professor extends ParticipantImpl {
      * @return String
      */
     public String listPapers() {
+        if (nPapers == 0) return "There are no papers";
         String str = "";
-        if (nPapers == 0) {
-            str += "No Papers";
-        } else {
-            for (Paper paper : this.papers) {
-                if (paper == null) break;
-                str += paper.toString() + " ";
-            }
+        for (Paper paper : this.papers) {
+            if (paper == null) break;
+            str += paper.toString() + " ";
         }
         return str;
     }
     
     /**
      * Finds a specific paper
-     * @param paper - Paper to find
+     * @param paper Paper to find
      * @return int
      */
     private int findPaper(Paper paper) {
@@ -199,50 +211,37 @@ public class Professor extends ParticipantImpl {
     
     /**
      * Removes a given array of papers[] from the paper's array
-     * @param papers - array of Papers to remove
+     * @param papers array of Papers to remove
      * @return int - the number of successfully removed papers
      */
-    public int delPaper(Paper[] papers) {
-        // throw error
+    public int delPaper(Paper[] papers) throws ParticipantException {
         int x = 0;
-        
-        for ( Paper paper : papers ) {
-            if ( paper == null ) break;
-            if (delPaper(paper)) {
-                x++;
+
+        try {
+            for ( Paper paper : papers ) {
+                if ( paper == null ) throw new NullPointerException();
+                if (delPaper(paper)) {
+                    x++;
+                }
             }
+        } catch (NullPointerException ex) {
+            throw new ParticipantException("The paper to remove can't be null.");
         }
+
         return x;
     }
 
     /**
-     * Gets a specific paper based on the index
-     * @param index - index of the paper
-     * @return the Paper
+     * Compares two professors, by all fields
+     * @param obj the equipment to compare
+     * @return true if the equipments are equal, false otherwise
      */
-    public Paper getPaper(int index) throws
-            ArrayIndexOutOfBoundsException, ParticipantException {
-        try {
-            if (this.papers[index] == null) throw new NullPointerException();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("The index is out of bounds.");
-        } catch (NullPointerException e) {
-            throw new ParticipantException("Couldn't find the Paper");
-        }
-        return this.papers[index];
-    }
-
     @Override
     public boolean equals(Object obj) {
         if ( super.equals(obj) ) return true;
-
         if ( obj.getClass() != this.getClass() ) return false;
-
         final Professor other = (Professor) obj;
-
-        return ( this.nPapers == other.nPapers &&
-                this.degree.equals(other.getDegree() ) &&
-                this.expertIn.equals(other.getExpertIn()) );
+        return ( this.nPapers == other.nPapers && this.degree.equals(other.getDegree() ) && this.expertIn.equals(other.getExpertIn()) );
     }
 
     /**
@@ -251,11 +250,6 @@ public class Professor extends ParticipantImpl {
      */
     @Override
     public String toString() {
-        return super.toString() + "Professor{" +
-                "papers=[" + listPapers() +
-                "], nPapers=" + nPapers +
-                ", degree=" + degree +
-                ", expertIn=" + expertIn +
-                '}';
+        return String.format("%sProfessor{papers=[%s], nPapers=%d, degree=%s, expertIn=%s}", super.toString(), listPapers(), nPapers, degree, expertIn);
     }
 }
