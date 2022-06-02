@@ -130,9 +130,9 @@ public class SessionImpl implements Session {
         
         if ( pos != -1 ) throw new SessionException("The Presentation is already set in the Session");
         
-        if ( ((PresentationImpl)prsntn).getnRequiredEquipments() <= 0 ) {
+        /*if ( ((PresentationImpl)prsntn).getnRequiredEquipments() < 0 ) {
             throw new SessionException("Couldn't add the Presentation since it does not have the required Equipments");
-        }
+        }*/
         
         Equipment[] requiredEquipments = ((PresentationImpl)prsntn).getRequiredEquipments();
         Equipment[] roomEquipments = ((RoomImpl)room).getEquipments();

@@ -2,11 +2,10 @@ package g6.ppacg6.interfaces;
 
 
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
-import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
 import g6.ppacg6.implementations.ConferenceImpl;
 
 /** Interface responsible for extending the exporter interface and for the management of the conferences*/
-public interface ConferenceManagement extends Exporter {
+public interface ConferenceManagement {
 
     /**
      * Method responsible for adding a new conference

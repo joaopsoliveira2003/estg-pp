@@ -20,14 +20,20 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 
+import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
+import g6.ppacg6.classes.Professor;
+import g6.ppacg6.classes.Student;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
 import g6.ppacg6.auxiliary.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ConferenceImpl implements Conference {
+public class ConferenceImpl implements Conference, Exporter {
     
     private String name;
     private LocalDateTime year;
@@ -79,12 +85,17 @@ public class ConferenceImpl implements Conference {
         if (nSessions == 0) return;
         
         for (Session session : sessions) {
+            if ( session == null ) break;
             if ( LocalDateTime.now().isBefore( ((SessionImpl)session).getEndTime() )) {
                 this.conferenceState = ConferenceState.IN_PROGRESS;
                 return;
             }
         }
         this.conferenceState = ConferenceState.FINISHED;
+    }
+
+    public void changeStateManual(ConferenceState cs) {
+        this.conferenceState = cs;
     }
 
     @Override
@@ -387,10 +398,14 @@ public class ConferenceImpl implements Conference {
         Room[] tempRooms = new Room[this.nSessions];
         int nRooms = 0;
         boolean found;
+
         for ( int x = 0; x < this.nSessions; x++ ) {
+            if ( this.sessions[x].getRoom() == null ) break;
             tempRooms[x] = this.sessions[x].getRoom();
+            nRooms++;
         }
 
+        // Remove duplicates
         for (int x = 1; x < tempRooms.length; x++) {
             found = false;
             for (int y = 0; y < nRooms; y++) {
@@ -404,6 +419,7 @@ public class ConferenceImpl implements Conference {
             }
         }
 
+        // Compress array
         Room[] rooms = new Room[nRooms];
         for ( int x = 0; x < nRooms; x++ ) {
             rooms[x] = tempRooms[x];
@@ -427,14 +443,25 @@ public class ConferenceImpl implements Conference {
 
         File directory = new File("conferenceCertificates/");
         if (!directory.exists()) {
-            directory.mkdirs();
+            directory.mkdir();
         }
 
         for ( int x = 0; x < speakers.length; x++ ) {
+            String presentationsID = "";
+            for ( int p = 0; p < nSessions; p++ ) {
+                try {
+                    if (sessions[p].getPresentation(p) == null) break;
+                    if ( sessions[p].getPresentation(p).getPresenter().equals(speakers[x]) ) {
+                        presentationsID = "_" + sessions[p].getPresentation(p).getId();
+                        break;
+                    }
+                } catch (SessionException e) {
+                    throw new ConferenceException(e.getMessage());
+                }
+            }
             try {
-                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(directory + speakers[x].getName() + string));
-                out.writeObject(speakers[x].toString());
-                out.close();
+                FileWriter file = new FileWriter("conferenceCertificates/ID"
+                        + speakers[x].getId() + "_PresentationsID" + presentationsID + ".json");
             } catch (Exception e) {
                 throw new ConferenceException(e.getMessage());
             }
@@ -468,9 +495,10 @@ public class ConferenceImpl implements Conference {
 
     @Override
     public Statistics[] getNumberOfParticipantsBySession() {
-        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
+        //if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
 
         Statistics[] tempStatistics = new Statistics[nSessions];
+        System.out.println(nSessions);
         for ( int x = 0; x < nSessions; x++ ) {
             tempStatistics[x] = new StatisticsImpl(sessions[x].getName(), ((SessionImpl) sessions[x]).getnParticipants());
         }
@@ -480,10 +508,13 @@ public class ConferenceImpl implements Conference {
     @Override
     public Statistics[] getNumberOfSessionsByRoom() {
         // We check on JsonGenerator if the conference is finished, since we can't throw an exception here
-        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
+        //if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
+
+        System.out.println("nSessions " + this.nSessions);
 
         Room[] rooms = this.getRooms();
         int nRooms = rooms.length;
+        System.out.println("nRooms" + nRooms);
         Statistics[] tempStatistics = new Statistics[nRooms];
         int[] sessionsByRoom = new int[nRooms];
 
@@ -499,10 +530,166 @@ public class ConferenceImpl implements Conference {
             }
         }
 
+        System.out.println("nrooms " + nRooms);
         for (int x = 0; x < nRooms; x++) {
             tempStatistics[x] = new StatisticsImpl(rooms[x].getName(), sessionsByRoom[x]);
         }
         return tempStatistics;
+    }
+
+    @Override
+    public String export() throws IOException {
+
+        if (! (this.getState().equals(ConferenceState.FINISHED)) ) throw new IOException("The Conference is not finished");
+
+        if ( this.getnSessions() == 0 ) throw new IOException("The Conference has no Sessions to export");
+
+        // save first Graphic to a JSON file
+        try {
+            FileWriter file = new FileWriter("numberOfSessionsByRoom.json");
+            file.write(this.generateNumberOfSessionsByRoom(this.getNumberOfSessionsByRoom()));
+            file.close();
+        } catch (ConferenceException | IOException e) {
+            throw new IOException(e.getMessage());
+        }
+
+        // save second Graphic to a JSON file
+        try {
+            FileWriter file = new FileWriter("numberOfParticipantsBySession.json");
+            file.write(this.generateNumberOfParticipantsBySession(this.getNumberOfParticipantsBySession()));
+            file.close();
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
+
+        return "ta bom";
+    }
+
+
+    /**
+     * Generates a JSON string with the number of sessions by room
+     * @param statistics the statistics array
+     * @return the JSON string
+     */
+    public String generateNumberOfSessionsByRoom(Statistics[] statistics) throws ConferenceException {
+
+        if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished");
+
+        JSONObject json = new JSONObject();
+        json.put("type", "bar");
+
+        JSONObject data = new JSONObject();
+        JSONArray labels = new JSONArray();
+        int i = 1;
+        for (Statistics stat : statistics) {
+            labels.add(stat.getDescription());
+        }
+        data.put("labels", labels);
+        json.put("data", data);
+
+        JSONArray datasets = new JSONArray();
+
+        JSONObject rooms = new JSONObject();
+
+        rooms.put("label", "Sessions by Rooms");
+        JSONArray dataRooms = new JSONArray();
+        for (Statistics stat : statistics) {
+            dataRooms.add(stat.getValue());
+        }
+        rooms.put("data", dataRooms);
+        datasets.add(rooms);
+
+        data.put("datasets", datasets);
+
+        System.out.println(json.toJSONString());
+
+        return json.toString();
+    }
+
+    /**
+     * Generates a JSON string with the number of participants by session
+     * @param statistics the statistics array
+     * @return the JSON string
+     */
+    public String generateNumberOfParticipantsBySession(Statistics[] statistics) {
+        JSONObject json = new JSONObject();
+        json.put("type", "bar");
+
+        JSONObject data = new JSONObject();
+        JSONArray labels = new JSONArray();
+        int i = 1;
+        for (Statistics stat : statistics) {
+            labels.add(stat.getDescription());
+        }
+        data.put("labels", labels);
+        json.put("data", data);
+
+        JSONArray datasets = new JSONArray();
+
+        JSONObject rooms = new JSONObject();
+
+        rooms.put("label", "Participants by Sessions");
+        JSONArray dataRooms = new JSONArray();
+        for (Statistics stat : statistics) {
+            dataRooms.add(stat.getValue());
+        }
+        rooms.put("data", dataRooms);
+        datasets.add(rooms);
+
+        data.put("datasets", datasets);
+
+        System.out.println(json.toJSONString());
+
+        return json.toJSONString();
+    }
+
+    /**
+     * Generates a JSON string of a Outlabeled Pie chart
+     * @param labels the labels of the graph
+     * @param data the data of the graph
+     * @return the JSON string
+     */
+    public String generateOutlabeledPie(String[] labels, String[] data) {
+        String cleanLabels = "", cleanData = "";
+
+        for (int i = 0; i < labels.length; i++) {
+            cleanLabels += "'" + labels[i] + "'";
+            if (i < labels.length - 1) {
+                cleanLabels += ",";
+            }
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            cleanData += "'" + data[i] + "'";
+            if (i < data.length - 1) {
+                cleanData += ",";
+            }
+        }
+
+        return String.format("{\n" +
+                "  \"type\": \"outlabeledPie\",\n" +
+                "  \"data\": {\n" +
+                "    \"labels\": [%s],\n" +
+                "    \"datasets\": [{\n" +
+                "        \"backgroundColor\": [\"#FF3784\", \"#36A2EB\", \"#4BC0C0\", \"#F77825\", \"#9966FF\"],\n" +
+                "        \"data\": [%s]\n" +
+                "    }]\n" +
+                "  },\n" +
+                "  \"options\": {\n" +
+                "    \"plugins\": {\n" +
+                "      \"legend\": false,\n" +
+                "      \"outlabels\": {\n" +
+                "        \"color\": \"white\",\n" +
+                "        \"stretch\": 35,\n" +
+                "        \"font\": {\n" +
+                "          \"resizable\": true,\n" +
+                "          \"minSize\": 12,\n" +
+                "          \"maxSize\": 18\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", cleanLabels, cleanData);
     }
 
 }

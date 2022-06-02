@@ -12,11 +12,16 @@ package g6.ppacg6.main;
 
 import estg.ipp.pt.tp02_conferencesystem.dashboards.Dashboard;
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
 import g6.ppacg6.classes.*;
 import g6.ppacg6.enumerations.*;
 import g6.ppacg6.implementations.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -54,28 +59,28 @@ public class PPACG6 {
         Room room2 = new RoomImpl("Room2", 30);
         Room room3 = new RoomImpl("Room3", 40);
 
-        Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2023, Month.MARCH, 1, 11, 0, 0),
-                LocalDateTime.of(2023, Month.MARCH, 1, 12, 0, 0), room1);
-        Session session2 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 12, 0, 0),
-                LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0), room1);
-        Session session3 = new SessionImpl("Session3", softwaredelevoplment, LocalDateTime.of(2022, Month.MARCH, 1, 13, 0, 0),
-                LocalDateTime.of(2022, Month.MARCH, 1, 14, 0, 0), room2);
+        Session session1 = new SessionImpl("Session1", cybersecurity, LocalDateTime.of(2020, Month.MARCH, 1, 11, 0, 0),
+                LocalDateTime.of(2021, Month.MARCH, 1, 12, 0, 0), room1);
+        Session session2 = new SessionImpl("Session2", softwaredelevoplment, LocalDateTime.of(2020, Month.MARCH, 1, 13, 0, 0),
+                LocalDateTime.of(2021, Month.MARCH, 1, 13, 30, 0), room2);
+        Session session3 = new SessionImpl("Session3", softwaredelevoplment, LocalDateTime.of(2020, Month.MARCH, 1, 13, 35, 0),
+                LocalDateTime.of(2021, Month.MARCH, 1, 14, 0, 0), room2);
 
         Presentation presentation1 = new PresentationImpl("Presentation1",
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), speaker1);
+                LocalDateTime.of(2021, Month.MARCH, 1, 1, 1, 10),
+                LocalDateTime.of(2021, Month.MARCH, 1, 1, 1, 30), speaker1);
 
         Presentation presentation2 = new PresentationImpl("Presentation2",
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), speaker2);
+                LocalDateTime.of(2021, Month.MARCH, 1, 1, 1, 10),
+                LocalDateTime.of(2021, Month.MARCH, 1, 1, 1, 30), speaker2);
 
         Presentation presentation3 = new PresentationImpl("Presentation3",
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 10),
-                LocalDateTime.of(2022, Month.MARCH, 1, 1, 1, 30), student1);
+                LocalDateTime.of(2021, Month.MARCH, 1, 1, 1, 10),
+                LocalDateTime.of(2021, Month.MARCH, 1, 1, 1, 30), student1);
 
-        Conference conference1 = new ConferenceImpl("Conf1", LocalDateTime.of(2023, 1, 1, 10, 0), FieldEnum.COMPUTER_SCIENCE.toString());
-        Conference conference2 = new ConferenceImpl("Conf2", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.NETWORKING.toString());
-        Conference conference3 = new ConferenceImpl("Conf3", LocalDateTime.of(2020, 1, 1, 10, 0), FieldEnum.CHEMISTRY.toString());
+        Conference conference1 = new ConferenceImpl("Conf1", LocalDateTime.of(2021, 1, 1, 10, 0), FieldEnum.COMPUTER_SCIENCE.toString());
+        Conference conference2 = new ConferenceImpl("Conf2", LocalDateTime.of(2021, 1, 1, 10, 0), FieldEnum.NETWORKING.toString());
+        Conference conference3 = new ConferenceImpl("Conf3", LocalDateTime.of(2021, 1, 1, 10, 0), FieldEnum.CHEMISTRY.toString());
 
         System.out.println("------------- Add Equipments ----------------");
         try {
@@ -113,21 +118,22 @@ public class PPACG6 {
         } catch (Exception ex) {
             System.out.println(ex);
         }
-        /*
+
         try {
             System.out.println( ((ConferenceImpl)conference1).addSession(session2)  );
         } catch (Exception ex) {
             System.out.println(ex);
         }
+
         try {
             System.out.println( ((ConferenceImpl)conference1).addSession(session3)  );
         } catch (Exception ex) {
             System.out.println(ex);
         }
-         */
+
 
         System.out.println("------------- Add Participants ----------------");
-        conference1.changeState();
+        ((ConferenceImpl) conference1).changeStateManual(ConferenceState.IN_PROGRESS);
         try {
             conference1.checkIn(student1);
         } catch (Exception ex) {
@@ -154,6 +160,21 @@ public class PPACG6 {
             System.out.println(ex);
         }
 
+        try {
+            ((SessionImpl) session1).delParticipant(student1);
+        } catch (SessionException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ((SessionImpl) session1).delParticipant(student2);
+        } catch (SessionException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ((SessionImpl) session2).delParticipant(student1);
+        } catch (SessionException e) {
+            throw new RuntimeException(e);
+        }
 
         System.out.println("------------- Get coisas ----------------");
         for ( Session s : conference1.getSessions() ) {
@@ -161,7 +182,7 @@ public class PPACG6 {
             System.out.println(s.toString());
         }
 
-        System.out.println("\n------------- Get Rooms ----------------");
+        /*System.out.println("\n------------- Get Rooms ----------------");
         for ( Room r : conference1.getRooms()) {
             if (r == null) break;
             System.out.println(r.toString());
@@ -207,7 +228,7 @@ public class PPACG6 {
         for (Statistics s : conference1.getNumberOfParticipantsBySession()) {
             System.out.println(s.getDescription() + " " + s.getValue());
         }
-        */
+
         System.out.println("------------- Get Schedule ----------------");
         System.out.println(conference1.getSchedule());
 
@@ -227,13 +248,16 @@ public class PPACG6 {
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }
-
+        */
         System.out.println("------------- Export File ----------------");
+        conference1.changeState();
         try {
             conference1.generateSpeakerCertificates("test.txt");
+            //System.out.println(((ConferenceImpl) conference1).export());
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }
+
 
         /*
         System.out.println("------------- Test ----------------");
@@ -243,7 +267,41 @@ public class PPACG6 {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        //Dashboard.render(new String[]{JsonGenerator.generateOutlabeledPie(new String[]{"caralho", "fodasse"}, new String[]{"1", "2"})});
+        //
+
+        conference1.changeState();
+
+
+        String[] jsonFiles = new String[2];
+
+        try {
+            FileReader file = new FileReader("numberOfParticipantsBySession.json");
+            BufferedReader br = new BufferedReader(file);
+            String s;
+            while((s = br.readLine()) != null) {
+                System.out.println(s);
+                jsonFiles[0] = s;
+            }
+            file.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        try {
+            FileReader file = new FileReader("numberOfSessionsByRoom.json");
+            BufferedReader br = new BufferedReader(file);
+            String s;
+            while((s = br.readLine()) != null) {
+                System.out.println(s);
+                jsonFiles[1] = s;
+            }
+            file.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+
+        Dashboard.render(jsonFiles);
         */
     }
 }
