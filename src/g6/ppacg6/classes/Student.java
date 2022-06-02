@@ -9,6 +9,7 @@
  */
 package g6.ppacg6.classes;
 
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import g6.ppacg6.enumerations.CourseEnum;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
@@ -48,7 +49,13 @@ public class Student extends ParticipantImpl {
      * Set the course of the Student
      * @param course - CourseEnum
      */
-    public void setCourse(CourseEnum course) {
+    public void setCourse(CourseEnum course) throws ParticipantException {
+        // Mais validacoes?
+        try {
+            if ( course == null ) throw new ParticipantException();
+        } catch (ParticipantException e) {
+            throw new ParticipantException("Course cannot be null");
+        }
         this.course = course;
     }
 
@@ -56,12 +63,27 @@ public class Student extends ParticipantImpl {
      * Set the courseYear of the Student
      * @param courseYear - int
      */
-    public void setCourseYear(int courseYear) {
+    public void setCourseYear(int courseYear) throws ParticipantException {
+        try {
+            if ( courseYear <= 1 || courseYear >= 10) throw new ParticipantException();
+        } catch (Exception e) {
+            throw new ParticipantException("Course year must be between 1 and 10");
+        }
         this.courseYear = courseYear;
     }
 
 
-    //equals
+    @Override
+    public boolean equals(Object obj) {
+        if ( super.equals(obj) ) return true;
+
+        if ( obj.getClass() != this.getClass() ) return false;
+
+        final Student other = (Student) obj;
+
+        return ( this.course.equals(other.getCourse())
+                && this.courseYear == other.getCourseYear() );
+    }
 
 
     @Override

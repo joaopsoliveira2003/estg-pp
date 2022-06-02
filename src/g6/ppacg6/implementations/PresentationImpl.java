@@ -19,6 +19,7 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 
 import g6.ppacg6.auxiliary.StringValidations;
 import g6.ppacg6.classes.Equipment;
+import g6.ppacg6.enumerations.ParticipantTypeEnum;
 import g6.ppacg6.exceptions.EquipmentException;
         
 import java.time.Duration;
@@ -136,19 +137,24 @@ public class PresentationImpl implements Presentation {
      * @param presenter - Presenter
      * @throws ParticipantException - when the Presenter is null or not of the Class Presenter
      */
-    /*
-    public void setPresenter(Presenter presenter) throws ParticipantException {
+    public void setPresenter(Participant presenter) throws ParticipantException {
         try {
             if (presenter == null) throw new NullPointerException("The Presenter can't be null");
         } catch ( NullPointerException ex ) {
             throw new ParticipantException(ex.getMessage());
-        } catch ( ClassCastException ex ) {
-            throw new ParticipantException("The Presenter is not qualified to be a Presenter");
-        } finally {
-            this.presenter = presenter;
         }
+
+        try {
+            if (! ((ParticipantImpl)presenter).getParticipantType().equals(
+                    ParticipantTypeEnum.SPEAKER) ) throw new ParticipantException();
+        } catch ( ClassCastException e ) {
+            throw new ParticipantException("The Presenter is not a Participant");
+        } catch ( ParticipantException e) {
+            throw new ParticipantException("The Presenter is not a Speaker");
+        }
+        this.presenter = presenter;
     }
-    */
+
     /**
      * Get the number of required Equipments for the Presentation
      * @return int

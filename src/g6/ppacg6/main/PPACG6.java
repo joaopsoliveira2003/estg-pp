@@ -86,7 +86,6 @@ public class PPACG6 {
         try {
             System.out.println(((RoomImpl) room1).addEquipment(laptop));
             System.out.println(((RoomImpl) room1).addEquipment(projector));
-            ((RoomImpl) room1).setEquipmentStatus(0, false); // Will throw error
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }

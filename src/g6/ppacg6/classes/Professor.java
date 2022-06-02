@@ -10,6 +10,7 @@
 
 package g6.ppacg6.classes;
 
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
 import g6.ppacg6.enumerations.DegreeEnum;
 import g6.ppacg6.enumerations.FieldEnum;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
@@ -70,7 +71,12 @@ public class Professor extends ParticipantImpl {
      * Sets the Degree
      * @param degree - DegreeEnum
      */
-    public void setDegree(DegreeEnum degree) {
+    public void setDegree(DegreeEnum degree) throws ParticipantException {
+        try {
+            if ( degree == null ) throw new ParticipantException();
+        } catch (ParticipantException e) {
+            throw new ParticipantException("Course cannot be null");
+        }
         this.degree = degree;
     }
 
@@ -86,8 +92,14 @@ public class Professor extends ParticipantImpl {
      * Sets the level of expertise
      * @param expertIn - FieldEnum
      */
-    public void setExpertIn(FieldEnum expertIn) {
-        this.expertIn = expertIn;
+    public void setExpertIn(FieldEnum expertIn) throws ParticipantException {
+        try {
+            if ( expertIn == null ) throw new ParticipantException();
+        } catch (ParticipantException e) {
+            throw new ParticipantException("expertIn cannot be null");
+        } finally {
+            this.expertIn = expertIn;
+        }
     }
     
     /**
@@ -191,6 +203,7 @@ public class Professor extends ParticipantImpl {
      * @return int - the number of successfully removed papers
      */
     public int delPaper(Paper[] papers) {
+        // throw error
         int x = 0;
         
         for ( Paper paper : papers ) {
@@ -207,8 +220,29 @@ public class Professor extends ParticipantImpl {
      * @param index - index of the paper
      * @return the Paper
      */
-    public Paper getPaper(int index) {
-        return papers[index];
+    public Paper getPaper(int index) throws
+            ArrayIndexOutOfBoundsException, ParticipantException {
+        try {
+            if (this.papers[index] == null) throw new NullPointerException();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ArrayIndexOutOfBoundsException("The index is out of bounds.");
+        } catch (NullPointerException e) {
+            throw new ParticipantException("Couldn't find the Paper");
+        }
+        return this.papers[index];
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( super.equals(obj) ) return true;
+
+        if ( obj.getClass() != this.getClass() ) return false;
+
+        final Professor other = (Professor) obj;
+
+        return ( this.nPapers == other.nPapers &&
+                this.degree.equals(other.getDegree() ) &&
+                this.expertIn.equals(other.getExpertIn()) );
     }
 
     /**

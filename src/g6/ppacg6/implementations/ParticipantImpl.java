@@ -6,7 +6,7 @@ import g6.ppacg6.enumerations.ParticipantTypeEnum;
 public abstract class ParticipantImpl implements Participant {
 
     private int id;
-    private int CID = 0;
+    private static int CID = 0;
 
     private String name;
     private String bio;
@@ -17,10 +17,6 @@ public abstract class ParticipantImpl implements Participant {
         this.name = name;
         this.bio = bio;
         this.participantType = participantType;
-    }
-
-    public int getCID() {
-        return this.CID;
     }
 
     @Override
@@ -44,7 +40,20 @@ public abstract class ParticipantImpl implements Participant {
 
     //sets
 
-    // equals
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+
+        if (this == obj) return true;
+
+        if ( !(obj instanceof ParticipantImpl) ) return false;
+
+        final ParticipantImpl other = (ParticipantImpl) obj;
+
+        return (this.id == other.getId());
+    }
+
 
     @Override
     public String toString() {

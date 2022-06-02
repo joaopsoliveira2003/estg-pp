@@ -9,6 +9,7 @@
  */
 package g6.ppacg6.implementations;
 
+import estg.ipp.pt.tp02_conferencesystem.enumerations.PresentationState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
@@ -77,7 +78,13 @@ public class SessionImpl implements Session {
 
     @Override
     public int getMaxDurationPerPresentation() {
-        return (int) (Duration.between(this.startTime, this.endTime).toMinutes() / this.nPresentations); //??
+        int timeLeft =
+                (int) Duration.between(this.startTime, this.endTime).toMinutes();
+
+        for (int i = 0; i < this.nPresentations; i++) {
+            timeLeft -= this.presentations[i].getDuration();
+        }
+        return (int) timeLeft;
     }
 
     @Override
@@ -118,10 +125,12 @@ public class SessionImpl implements Session {
     
     @Override
     public boolean addPresentation(Presentation prsntn) throws SessionException {
-
-        // CHECK IF THERE IS AVAILABLE TIME LEFT IN THE SESSION TO ADD THE PRESENTATION
-
         if (prsntn == null) throw new SessionException("Can't add a Presentation that is null");
+
+        if ( prsntn.getDuration() > this.getMaxDurationPerPresentation() ) {
+            throw new SessionException("There is no time left in the session to add the" +
+                    " Presentation.");
+        }
         
         if (nPresentations == presentations.length) throw new 
         SessionException("Can't add more Presentations to this Session");
@@ -129,11 +138,8 @@ public class SessionImpl implements Session {
         int pos = findPresentation(prsntn);
         
         if ( pos != -1 ) throw new SessionException("The Presentation is already set in the Session");
-        
-        /*if ( ((PresentationImpl)prsntn).getnRequiredEquipments() < 0 ) {
-            throw new SessionException("Couldn't add the Presentation since it does not have the required Equipments");
-        }*/
-        
+
+        // Check if the Room has the required Equipments to run the Presentation
         Equipment[] requiredEquipments = ((PresentationImpl)prsntn).getRequiredEquipments();
         Equipment[] roomEquipments = ((RoomImpl)room).getEquipments();
         int nEquip = Math.max(requiredEquipments.length, roomEquipments.length);
@@ -141,8 +147,6 @@ public class SessionImpl implements Session {
         for ( int x = 0; x < nEquip; x++ ) {
             if ( requiredEquipments[x] == null ) break;
             if (! (requiredEquipments[x].equals( roomEquipments[x] )) ) {
-                throw new SessionException("The Room of the Session does not have the required Equipments to accomodate the Presentation");
-            } else if ( requiredEquipments[x].hasProblems() ) {
                 throw new SessionException("The Room of the Session does not have the required Equipments to accomodate the Presentation");
             }
         }
@@ -210,14 +214,19 @@ public class SessionImpl implements Session {
     
     @Override
     public boolean isStarted() {
-        // if on editing false
-        // else true, aka comecou ou acabou
-        return ( this.startTime.isAfter(LocalDateTime.now()) );
+
+        for ( int p = 0; p < nPresentations; p++ ) {
+            if (! ( ((PresentationImpl)this.presentations[p]).getPresentationState().equals(
+                    PresentationState.NOT_PRESENTED) ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public Participant[] getAllPresenters() {
-        Participant[] tempParticipant = new Participant[nPresentations];
+        Participant[] tempParticipant = new Participant[nParticipants];
         for ( int x = 0; x < nPresentations; x++ ) {
             tempParticipant[x] = presentations[x].getPresenter();
         }

@@ -25,10 +25,7 @@ public class Equipment {
      * The equipment's type
      */
     private EquipmentEnum equipment;
-    /**
-     * The equipment's state (if has problems, the default is false)
-     */
-    private boolean hasProblems = false;
+
 
     /**
      * Constructor for the Equipment
@@ -39,7 +36,6 @@ public class Equipment {
     public Equipment(int id, EquipmentEnum equipment) {
         this.id = id;
         this.equipment = equipment;
-        this.hasProblems = false;
     }
     
     /**
@@ -75,21 +71,6 @@ public class Equipment {
         this.equipment = equipment;
     }
 
-    /**
-     * Checks if the Equipment has problems
-     * @return boolean
-     */
-    public boolean hasProblems() {
-        return hasProblems;
-    }
-
-    /**
-     * Changes the hasProblems field of the Equipment
-     * @param hasProblems boolean
-     */
-    public void setHasProblems(boolean hasProblems) {
-        this.hasProblems = hasProblems;
-    }
 
 
     /**
@@ -100,10 +81,15 @@ public class Equipment {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
+
         if (obj == null) return false;
+
         if (getClass() != obj.getClass()) return false;
+
         final Equipment other = (Equipment) obj;
+
         if (this.id == other.id) return true;
+
         return this.equipment == other.equipment;
     }
 
@@ -113,7 +99,7 @@ public class Equipment {
      */
     @Override
     public String toString() {
-        return "Equipment{" + "id=" + id + ", equipment=" + equipment + ", hasProblems=" + hasProblems + '}';
+        return "Equipment{" + "id=" + id + ", equipment=" + equipment + '}';
     }
     
 }

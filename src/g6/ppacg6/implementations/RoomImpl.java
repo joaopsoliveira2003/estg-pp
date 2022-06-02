@@ -143,6 +143,7 @@ public class RoomImpl implements Room {
     }
     
     public boolean delEquipment(Equipment equipment) {
+        // TODO thrwo errors
         if (nEquipments == 0) return false;
         
         if (equipment == null) return false;
@@ -168,18 +169,6 @@ public class RoomImpl implements Room {
             }
         }
         return x;
-    }
-    
-    public void setEquipmentStatus(int i, boolean status) throws EquipmentException {
-        if ( nEquipments == 0 ) return;
-        
-        try {
-            if ( this.equipments[i] == null ) throw new NullPointerException();
-        } catch (Exception ex) {
-            throw new EquipmentException("Couldn't find the specified Equipment");
-        }
-        
-        this.equipments[i].setHasProblems(!status);
     }
     
     public Equipment[] getEquipments() {

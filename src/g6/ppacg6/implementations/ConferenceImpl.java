@@ -100,6 +100,7 @@ public class ConferenceImpl implements Conference, Exporter {
 
     @Override
     public int getYear() {
+        //The year should be greater or equal than the current year
         return this.year.getYear();
     }
 
@@ -139,31 +140,41 @@ public class ConferenceImpl implements Conference, Exporter {
     
     @Override
     public boolean addSession(Session sn) throws ConferenceException {
-        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
+        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) )
+            throw new ConferenceException("The conference is not in editing mode.");
 
-        // ver se a sala esta ocupada, considerando startTime e duration
-        //sera?
-        for ( int sR = 0; sR < nSessions; sR++ ) {
-            if ( this.sessions[sR].getRoom().equals(sn.getRoom()) ) {
-                if ( this.sessions[sR].getStartTime().isBefore(sn.getStartTime()) &&
-                        this.sessions[sR].getDuration() == sn.getDuration() ) {
-                    throw new ConferenceException("The session is overlapping with another session.");
+        /* ver se a sala esta ocupada, considerando startTime e duration
+
+        // loop nas sessions e salas, filtar as que o startTime before sn.startTime
+        // e sn.duration - que a session seja antes do endTime da session
+        // se sim, ver se a room e a mesma, e throw exception
+
+        for ( Session session : this.sessions ) {
+            if ( session == null ) break;
+            if ( sn.getStartTime().isAfter(session.getStartTime()) &&
+                    sn.getDuration() < ((SessionImpl)session).getMaxDurationPerPresentation() ) {
+                if ( sn.getRoom().equals(session.getRoom()) ) {
+                    throw new ConferenceException("The room is already occupied.");
                 }
             }
         }
-        // se participant ja esta a apresnetar em outra sessions no mesmo intervalo
-        // sera?
-        try {
-            for (int s = 0; s < nSessions; s++) {
-                if ( this.sessions[s].getStartTime().isAfter(sn.getStartTime()) ) {
-                    for (int sA = 0; sA < this.sessions[s].getNumberOfPresentations(); sA++) {
-                        this.sessions[s].getPresentation(sA).getPresenter().equals(sn.getPresentation(sA).getPresenter());
+        */
+
+        // se participant ja esta a apresentar em outra sessions no mesmo intervalo
+        for ( Session session : this.sessions ) {
+            if ( session == null ) break;
+            if ( sn.getStartTime().isAfter(session.getStartTime()) &&
+                    ((SessionImpl)session).getEndTime().isBefore(((SessionImpl)session).getEndTime()) ) {
+                for ( Participant presenterSession : session.getAllPresenters() ) {
+                    for ( Participant presenterSn : session.getAllPresenters() ) {
+                        if ( presenterSn.equals(presenterSession) ) {
+                            throw new ConferenceException("The participant is already presenting in another session.");
+                        }
                     }
                 }
             }
-        } catch (SessionException e) {
-            throw new ConferenceException(e.getMessage());
         }
+
         // se uma apresentacao de esta sessao esta noutras sessoes
 
         if (sn == null) throw new ConferenceException("The session to add can't be null.");
@@ -177,6 +188,8 @@ public class ConferenceImpl implements Conference, Exporter {
         }
 
         if (pos != -1) return false;
+        /*if (pos != -1) throw new ConferenceException("The session already exists in " +
+                "the Conference.");*/
 
         sessions[nSessions++] = (Session) sn;
         return true;
@@ -224,7 +237,7 @@ public class ConferenceImpl implements Conference, Exporter {
         sessions[--nSessions] = null;
     }
 
-    public void removeSessions(Session[] sn) throws ConferenceException {
+    public void removeSession(Session[] sn) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
 
         if (sn == null) throw new ConferenceException("The sessions to remove can't be null.");
@@ -692,4 +705,18 @@ public class ConferenceImpl implements Conference, Exporter {
                 "}", cleanLabels, cleanData);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+
+        if (this == obj) return true;
+
+        if ( obj.getClass() != this.getClass() ) return false;
+
+        final ConferenceImpl other = (ConferenceImpl) obj;
+
+        return ( this.year.getYear() == other.year.getYear() );
+    }
+
+    // TODO toString
 }
