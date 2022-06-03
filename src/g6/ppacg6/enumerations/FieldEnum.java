@@ -10,11 +10,12 @@
 
 package g6.ppacg6.enumerations;
 
+/** Enumeration of fields */
 public enum FieldEnum {
     MATHEMATICS, PHYSICS, CHEMISTRY, COMPUTER_SCIENCE, PROGRAMMING, NETWORKING, SECURITY;
     
      /**
-     * Return a more visual representation of a given field
+     * Returns a more visual representation of a given field
      * @param field - FieldEnum
      * @return String
      */

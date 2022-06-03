@@ -17,20 +17,31 @@ import g6.ppacg6.implementations.ParticipantImpl;
 
 import java.util.Objects;
 
+/** Class responsible for the student */
 public class Student extends ParticipantImpl {
-    
+
+    /** The student's course */
     private CourseEnum course;
+
+    /** The student's year */
     private int courseYear;
 
+    /**
+     * Constructor of the student
+     * @param name name of the student
+     * @param bio bio of the student
+     * @param participantType type of participant
+     * @param course course of the student
+     * @param courseYear year of the student
+     */
     public Student(String name, String bio, ParticipantTypeEnum participantType, CourseEnum course, int courseYear) {
         super(name, bio, participantType);
         this.course = course;
         this.courseYear = courseYear;
     }
 
-
     /**
-     * Get the Course of the Student
+     * Gets the Course of the Student
      * @return CourseEnum
      */
     public CourseEnum getCourse() {
@@ -38,7 +49,7 @@ public class Student extends ParticipantImpl {
     }
 
     /**
-     * Get the courseYear of the Student
+     * Gets the courseYear of the Student
      * @return int
      */
     public int getCourseYear() {
@@ -46,8 +57,9 @@ public class Student extends ParticipantImpl {
     }
 
     /**
-     * Set the course of the Student
-     * @param course - CourseEnum
+     * Sets the course of the Student
+     * @param course int
+     * @throws ParticipantException when the course is null
      */
     public void setCourse(CourseEnum course) throws ParticipantException {
         try {
@@ -59,19 +71,24 @@ public class Student extends ParticipantImpl {
     }
 
     /**
-     * Set the courseYear of the Student
-     * @param courseYear - int
+     * Sets the courseYear of the Student
+     * @param courseYear int
+     * @throws ParticipantException when the courseYear is less than 1 or greater or equal than 20
      */
     public void setCourseYear(int courseYear) throws ParticipantException {
-        try {
-            if ( courseYear <= 1 || courseYear >= 10) throw new ParticipantException();
-        } catch (Exception e) {
-            throw new ParticipantException("Course year must be between 1 and 10");
-        }
+        if ( courseYear <= 1 || courseYear >= 20) throw new ParticipantException("Course year must be between 1 and 50");
         this.courseYear = courseYear;
     }
 
 
+    /**
+     * Compares two students, by all fields
+     * First compare the two objects using the super class's equals method
+     * If that method returns true, then they are the same object, otherwise,
+     * we continue with the rest of the comparison of specific fields
+     * @param obj - the object to be compared with
+     * @return boolean, true if the objects are the same, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if ( super.equals(obj) ) return true;
@@ -84,6 +101,10 @@ public class Student extends ParticipantImpl {
                 && this.courseYear == other.getCourseYear() );
     }
 
+    /**
+     * Lists all the fields of the Student
+     * @return String
+     */
     @Override
     public String toString() {
         return super.toString() + "Student{" + "course=" + course + ", courseYear=" + courseYear + '}';

@@ -10,24 +10,35 @@
 
 package g6.ppacg6.implementations;
 
-import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
-import g6.ppacg6.auxiliary.StringValidations;
-import estg.ipp.pt.tp02_conferencesystem.exceptions.RoomException;
-import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import g6.ppacg6.classes.Equipment;
+import g6.ppacg6.auxiliary.StringValidations;
 import g6.ppacg6.exceptions.EquipmentException;
+import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
+import estg.ipp.pt.tp02_conferencesystem.exceptions.RoomException;
 
+/** Class that represents a room in the conference system. */
 public class RoomImpl implements Room {
-    // TODO - check the class
+
+    /** The room's ID */
     private int id = 0;
+
+    /** The class's ID Counter */
     private static int CID = 0;
 
+    /** The room's name */
     private String name;
+
+    /** The room's capacity */
     private int numberOfSeats = 0;
-    
+
+    /** The number of equipments in the rooms */
     private int nEquipments = 0;
+
+    /** The room's equipments array */
     private Equipment[] equipments;
-    private static final int MAX_EQUIPMENTS = 10;
+
+    /** The initial size of the room's equipment's array  */
+    private static final int INITIAL_EQUIPMENTS = 10;
     
     /**
      * Constructor for the Room
@@ -40,7 +51,7 @@ public class RoomImpl implements Room {
         this.name = name;
         this.numberOfSeats = numberOfSeats;
         this.nEquipments = 0;
-        this.equipments = new Equipment[MAX_EQUIPMENTS];
+        this.equipments = new Equipment[INITIAL_EQUIPMENTS];
     }
     
     /**
@@ -61,14 +72,18 @@ public class RoomImpl implements Room {
         return this.name;
     }
 
-    public void setName(String name) throws 
-        ArrayIndexOutOfBoundsException, NullPointerException {
+    /**
+     * Set the name of the Room, is the String is valid
+     * @param name - String to be set as the name of the Room
+     * @throws RoomException - if the String is not valid
+     */
+    public void setName(String name) throws RoomException {
         try {
             if (StringValidations.isValidString(name, 50)) this.name = name;
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("The name of the room cant exceed the limit of allowed characters.");
+            throw new RoomException("The name of the room cant exceed the limit of allowed characters.");
         } catch (NullPointerException e) {
-            throw new NullPointerException("The name of the room cant be set as null");
+            throw new RoomException("The name of the room cant be set as null");
         }
     }
     
@@ -82,26 +97,38 @@ public class RoomImpl implements Room {
     }
 
     /**
-     * Set the number of the seats of the Room
-     * @param numberOfSeats - the number of seats of the room
-     * @throws IllegalArgumentException - when the parsed variable is not int
-     * @throws RoomException - when the number of seats are below or equal to 0 OR above or equal to 250
+     * Get the number of equipments in the Room
+     * @return int
      */
-    public void setNumberOfSeats(int numberOfSeats) throws
-            IllegalArgumentException, RoomException, NumberFormatException, RuntimeException {
-        if (numberOfSeats <= 0) throw new RoomException("The number of seats of the room cant be set as 0 or below.");
-        if (numberOfSeats >= 250) throw new RoomException("The number of seats of the room cant be set as 250.");
-        try {
-            if (!(Integer.class.isInstance(numberOfSeats))) this.numberOfSeats = numberOfSeats;
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("You must specify an integer.");
-        }
-    }
-
     public int getnEquipments() {
         return this.nEquipments;
     }
-    
+
+    /**
+     * Get the equipments array of the Room
+     * @return Equipment[]
+     */
+    public Equipment[] getEquipments() {
+        return this.equipments;
+    }
+
+    /**
+     * Set the number of seats of the Room, is the number is valid
+     * @param numberOfSeats - int to be set as the number of seats of the Room
+     * @throws RoomException - if the number is 0 or below, or above 500
+     */
+    public void setNumberOfSeats(int numberOfSeats) throws RoomException {
+        if (numberOfSeats <= 0) throw new RoomException("The number of seats of the room cant be set as 0 or below.");
+        if (numberOfSeats > 500) throw new RoomException("The number of seats of the room cant be set as 250.");
+        this.numberOfSeats = numberOfSeats;
+    }
+
+
+    /**
+     * Find an equipment in the array of equipments
+     * @param equipment - Equipment to be found
+     * @return int - the index of the equipment in the array, or -1 if it is not found
+     */
     private int findEquipment(Equipment equipment) {
         int pos = -1, x = 0;
         
@@ -113,27 +140,36 @@ public class RoomImpl implements Room {
         }
         return pos;
     }
-    
-    
-    public boolean addEquipment(Equipment equipment) throws EquipmentException {
 
-        try {
-            if (equipment == null) throw new NullPointerException();
-        } catch (NullPointerException e) {
-            throw new EquipmentException("Coudn't add the specified equipment.");
-        }
+
+    /**
+     * Add an equipment to the array of equipments
+     * @param equipment - Equipment to be added
+     * @return boolean - true if the equipment was added, false if it was not
+     * @throws EquipmentException - if the equipment is already in the array, or null
+     */
+    public boolean addEquipment(Equipment equipment) throws EquipmentException {
+        if (equipment == null) throw new NullPointerException("Couldn't add the specified equipment.");
         
-        if (nEquipments == equipments.length) return false;
+        if ( nEquipments == equipments.length ) return false;
         
         int pos = findEquipment(equipment);
         
-        if (pos != -1) return false;
+        if ( pos != -1 ) throw new EquipmentException("The equipment is already in the array.");
         
         equipments[nEquipments++] = equipment;
         return true;
-    }   
-    
+    }
+
+    /**
+     * Add's an array of equipments to the array of equipments
+     * @param equipmentsToAdd - array of equipments to be added
+     * @return int - the number of equipments added successfully
+     * @throws EquipmentException - if the array is null or empty
+     */
     public int addEquipment(Equipment[] equipmentsToAdd) throws EquipmentException {
+        if ( equipmentsToAdd.length == 0 ) throw new EquipmentException("The array of equipments to be added is empty.");
+
         int x = 0;
         
         for ( Equipment equipment : equipmentsToAdd ) {
@@ -141,16 +177,21 @@ public class RoomImpl implements Room {
         }
         return x;
     }
-    
-    public boolean delEquipment(Equipment equipment) {
-        // TODO thrwo errors
-        if (nEquipments == 0) return false;
+
+    /**
+     * Remove an equipment from the array of equipments
+     * @param equipment - Equipment to be removed
+     * @return boolean - true if the equipment was removed, false if it was not
+     * @throws EquipmentException - if the equipment is not in the array, or null
+     */
+    public boolean delEquipment(Equipment equipment) throws EquipmentException {
+        if ( nEquipments == 0 ) throw new EquipmentException("The room has no equipments.");
         
-        if (equipment == null) return false;
+        if ( equipment == null ) throw new EquipmentException("Couldn't remove the specified equipment.");
         
         int pos = findEquipment(equipment);
         
-        if (pos == -1) return false;
+        if (pos == -1) throw new EquipmentException("The equipment is not in the array.");
         
         for ( int x = pos; x < nEquipments - 1; x++ ) {
             equipments[x] = equipments[x + 1];
@@ -159,8 +200,16 @@ public class RoomImpl implements Room {
         equipments[--nEquipments] = null;
         return true;
     }
-    
-    public int delEquipment(Equipment[] equipmentsToDel) {
+
+    /**
+     * Remove an array of equipments from the array of equipments
+     * @param equipmentsToDel - array of equipments to be removed
+     * @return int - the number of equipments removed successfully
+     * @throws EquipmentException - if the array is null or empty
+     */
+    public int delEquipment(Equipment[] equipmentsToDel) throws EquipmentException {
+        if ( equipmentsToDel.length == 0 ) throw new EquipmentException("The array of equipments to be deleted is empty.");
+
         int x = 0;
         
         for ( Equipment equipment : equipmentsToDel ) {
@@ -170,23 +219,11 @@ public class RoomImpl implements Room {
         }
         return x;
     }
-    
-    public Equipment[] getEquipments() {
-        return this.equipments;
-    }
 
-    public Equipment getEquipment(int i) throws EquipmentException {
-        if (nEquipments == 0) throw new EquipmentException("There are no Equipments in the Room.");
-
-        try {
-            if ( this.equipments[i] == null ) throw new ArrayIndexOutOfBoundsException();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new EquipmentException("Couldn't find the Equipment in the Room.");
-        }
-        return this.equipments[i];
-    }
-
-
+    /**
+     * List all the equipments in the array of equipments
+     * @return String - the list of equipments
+     */
     public String listEquipments() {
         String str = "";
         for ( Equipment equipment : this.equipments ) {
@@ -195,7 +232,12 @@ public class RoomImpl implements Room {
         }
         return str;
     }
-    
+
+    /**
+     * Compare two Rooms, by their ID and name
+     * @param obj - Room to be compared
+     * @return boolean - true if the Rooms are equal, false if they are not
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -210,6 +252,10 @@ public class RoomImpl implements Room {
         return ( this.name.equals(other.name) );
     }
 
+    /**
+     * List all the properties of the Room
+     * @return String - the list of properties
+     */
     @Override
     public String toString() {
         return "RoomImpl{" + "id=" + id + ", name=" + name + ", numberOfSeats=" + numberOfSeats + ", nEquipments=" + nEquipments + ", equipments=[" + listEquipments() + "]}";

@@ -10,11 +10,12 @@
 
 package g6.ppacg6.enumerations;
 
+/** Enumeration of courses */
 public enum CourseEnum {
     LSIRC, LEI, LSIG, MEI;
     
     /**
-     * Return a more visual representation of a given course
+     * Returns a more visual representation of a given course
      * @param course - CourseEnum
      * @return String
      */

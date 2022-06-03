@@ -62,7 +62,7 @@ public class Paper {
 
     /**
      * Sets the title of the paper,
-     * uses the Util Class StringValidations to make String related validations
+     * Uses the Util Class StringValidations to make String related validations
      * @param title String
      */
     public void setTitle(String title) throws Exception {
@@ -106,7 +106,7 @@ public class Paper {
     }
 
     /**
-     * Compares two papers, by ID and title
+     * Compares two papers, by ID and Title
      * @param obj the other paper to compare
      * @return boolean
      */
@@ -126,6 +126,10 @@ public class Paper {
         return ( this.title.equals(other.title) );
     }
 
+    /**
+     * List all the properties of the Paper
+     * @return String
+     */
     @Override
     public String toString() {
         return "Paper{" + "title='" + title + '\'' + ", theme=" + theme + ", topic=" + topic + ", id=" + id + '}';

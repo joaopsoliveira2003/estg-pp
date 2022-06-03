@@ -11,6 +11,7 @@
 package g6.ppacg6.classes;
 
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
+import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 import g6.ppacg6.enumerations.DegreeEnum;
 import g6.ppacg6.enumerations.FieldEnum;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
@@ -28,7 +29,7 @@ public class Professor extends ParticipantImpl {
     /** The professor's papers */
     private Paper[] papers;
 
-    /** The initial ammount of papers for the array */
+    /** The initial amount of papers for the array */
     private static int INITIAL_PAPERS = 10;
 
     /** The professor's degree */
@@ -43,7 +44,7 @@ public class Professor extends ParticipantImpl {
      * @param bio bio of the professor
      * @param degree degree of the professor
      * @param expertIn level of expertise of the professor
-     * @apiNote <b>nPapers</b> is set to 0 by default and the <b>papers</b> array is set to the initial ammount of papers
+     * @apiNote <b>nPapers</b> is set to 0 by default and the <b>papers</b> array is set to the initial amount of papers
      */
     public Professor(String name, String bio, ParticipantTypeEnum participantType, DegreeEnum degree, FieldEnum expertIn) {
         super(name, bio, participantType);
@@ -64,7 +65,7 @@ public class Professor extends ParticipantImpl {
     /**
      * Gets a specific paper based on the index
      * @param index index of the paper
-     * @return the Paper
+     * @return Paper
      */
     public Paper getPaper(int index) throws ParticipantException {
         try {
@@ -86,8 +87,9 @@ public class Professor extends ParticipantImpl {
     }
 
     /**
-     * Sets the Degree
+     * Set's the Degree
      * @param degree DegreeEnum
+     * @throws ParticipantException when the degree is null
      */
     public void setDegree(DegreeEnum degree) throws ParticipantException {
         try {
@@ -107,8 +109,9 @@ public class Professor extends ParticipantImpl {
     }
 
     /**
-     * Sets the level of expertise
+     * Set's the level of expertise
      * @param expertIn FieldEnum
+     * @throws ParticipantException when the field is null
      */
     public void setExpertIn(FieldEnum expertIn) throws ParticipantException {
         try {
@@ -124,7 +127,7 @@ public class Professor extends ParticipantImpl {
      * @return String
      */
     public String listPapers() {
-        if ( nPapers == 0 ) return "The Professor has no Papers";
+        if ( nPapers == 0 ) return "No Papers";
 
         String str = "";
         for (Paper paper : this.papers) {
@@ -135,9 +138,9 @@ public class Professor extends ParticipantImpl {
     }
     
     /**
-     * Finds a specific paper
+     * Finds a specific paper in the array of papers
      * @param paper Paper to find
-     * @return int
+     * @return position
      */
     private int findPaper(Paper paper) {
         int pos = -1, x = 0;
@@ -150,20 +153,39 @@ public class Professor extends ParticipantImpl {
         }
         return pos;
     }
-    
+
+    private void increasePapersArr() throws OutOfMemoryError {
+        Paper[] tmpPapers = new Paper[nPapers * 2];
+
+        try {
+            for ( int x = 0; x < nPapers; x++ ) {
+                tmpPapers[x] = this.papers[x];
+            }
+        } catch (OutOfMemoryError e) {
+            throw new OutOfMemoryError();
+        }
+
+        this.papers = tmpPapers;
+    }
+
     /**
-     * Adds a paper to the array papers[] of the professor
-     * @param paper paper to add
-     * @return boolean
+     * Adds a paper to the array papers[]
+     * @param paper paper paper to add
+     * @return boolean - true if added succesfully, false otherwise
+     * @throws PaperException when the paper is null or already exists
      */
     public boolean addPaper(Paper paper) throws PaperException {
-        if (paper == null) throw new PaperException("The paper to add can't be null.");
+        if ( paper == null ) throw new PaperException("The paper to add can't be null.");
         
         int pos = findPaper(paper);
         
-        if ( nPapers == papers.length ) return false;
+        try {
+            if ( nPapers == papers.length ) increasePapersArr();
+        } catch (OutOfMemoryError e) {
+            throw new PaperException("There is no more memory available to accommodate more papers.");
+        }
         
-        if (pos != -1) return false;
+        if ( pos != -1 ) throw new PaperException("The paper is already in the array.");
         
         papers[nPapers++] = paper;
         return true;
@@ -198,8 +220,7 @@ public class Professor extends ParticipantImpl {
     public boolean delPaper(Paper paper) throws ParticipantException {
         if ( nPapers == 0 ) return false;
         
-        if ( paper == null ) throw new
-                ParticipantException("The topic to add can't be null.");
+        if ( paper == null ) throw new ParticipantException("The paper to add can't be null.");
         
         int pos = findPaper(paper);
         
@@ -237,8 +258,11 @@ public class Professor extends ParticipantImpl {
 
     /**
      * Compares two professors, by all fields
+     * First compare the two objects using the super class's equals method
+     * If that method returns true, then they are the same object, otherwise,
+     * we continue with the rest of the comparison of specific fields
      * @param obj the equipment to compare
-     * @return true if the equipments are equal, false otherwise
+     * @return true if the professors are equal, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -253,6 +277,10 @@ public class Professor extends ParticipantImpl {
                 this.expertIn.equals(other.getExpertIn()) );
     }
 
+    /**
+     * List all the professor's properties
+     * @return String
+     */
     @Override
     public String toString() {
         return super.toString() + "Professor{" + "nPapers=" + nPapers + ", papers=[" + listPapers() + "], " +

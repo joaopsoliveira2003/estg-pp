@@ -19,7 +19,7 @@ import g6.ppacg6.exceptions.EquipmentException;
 public class Equipment {
 
     /**
-     * The equipment's id
+     * The equipment's ID
      */
     private int id;
     /**
@@ -46,9 +46,11 @@ public class Equipment {
         return id;
     }
 
+
     /**
-     * Sets the ID of the Equipment
-     * @param id the id
+     * Set the ID of the Equipment, if valid
+     * @param id int
+     * @throws EquipmentException, when the ID is a negative number
      */
     public void setId(int id) throws EquipmentException {
         if (id < 0) {
@@ -66,8 +68,9 @@ public class Equipment {
     }
 
     /**
-     * Sets the type of the Equipment
+     * Sets the Equipment type, if valid
      * @param equipment EquipmentEnum
+     * @throws EquipmentException when the Equipment is null
      */
     public void setEquipment(EquipmentEnum equipment) throws EquipmentException {
         if (equipment == null) {
@@ -79,6 +82,10 @@ public class Equipment {
     /**
      * Compares two equipments, by ID and type of the EquipmentEnum
      * @param obj the equipment to compare
+     * False when:
+     * Object is null, or not an Equipment
+     * True when:
+     * It's the same object, or has the same ID and type of the EquipmentEnum
      * @return true if the equipments are equal, false otherwise
      */
     @Override
@@ -96,6 +103,10 @@ public class Equipment {
         return this.equipment.equals(other.equipment);
     }
 
+    /**
+     * List the properties of the Equipment
+     * @return String
+     */
     @Override
     public String toString() {
         return "Equipment{" + "id=" + id + ", equipment=" + equipment + '}';

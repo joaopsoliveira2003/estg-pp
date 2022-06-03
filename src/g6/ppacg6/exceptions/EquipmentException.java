@@ -10,15 +10,19 @@
 
 package g6.ppacg6.exceptions;
 
+/** Exception related to the Equipment Class */
 public class EquipmentException extends Exception {
 
+    /** Constructor */
     public EquipmentException() {
     }
 
+    /** Constructor with custom message */
     public EquipmentException(String message) {
         super(message);
     }
 
+    /** Constructor with custom message and cause */
     public EquipmentException(String message, Throwable cause) {
         super(message, cause);
     }

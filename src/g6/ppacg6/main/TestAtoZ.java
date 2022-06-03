@@ -34,6 +34,11 @@ public class TestAtoZ {
         ParticipantImpl student5 = new Student("S5", "Bio", ParticipantTypeEnum.VISITOR,
                 CourseEnum.LSIRC, 5  );
 
+        try {
+            ((Student)student1).setCourseYear(-1);
+        } catch (ParticipantException e) {
+            System.out.println(e.getMessage());
+        }
         Theme theme1 = new Theme("Cybersecurity");
         Theme theme2 = new Theme("Cybersecuriy");
         Topic topic1 = new Topic("Malware");
@@ -61,28 +66,28 @@ public class TestAtoZ {
 
 
 
-        Presentation presentation1 = new PresentationImpl("Pres1",
+        Presentation presentation1 = new PresentationImpl("Malwares in ESTG",
                 LocalDateTime.of(2022, 10, 10, 12, 00),
                 LocalDateTime.of(2022, 10, 10, 12, 15), professor1);
 
-        Presentation presentation2 = new PresentationImpl("Pres2",
-                LocalDateTime.of(2022, 10, 10, 12, 20),
+        Presentation presentation2 = new PresentationImpl("How to secure Pornhub",
+                LocalDateTime.of(2022, 10, 10, 11, 50),
                 LocalDateTime.of(2022, 10, 10, 12, 50), student1);
 
-        Presentation presentation3 = new PresentationImpl("Pres3",
+        Presentation presentation3 = new PresentationImpl("Catching pedofiles on DarkWeb",
                 LocalDateTime.of(2022, 10, 10, 13, 00),
                 LocalDateTime.of(2022, 10, 10, 13, 30), professor2);
 
-        Presentation presentation4 = new PresentationImpl("Pres4",
+        Presentation presentation4 = new PresentationImpl("Java in the dark",
                 LocalDateTime.of(2022, 10, 10, 15, 10),
                 LocalDateTime.of(2022, 10, 10, 15, 30), professor2);
 
 
-        Session session2 = new SessionImpl("Session1", theme1,
+        Session session1 = new SessionImpl("Session1", theme1,
                 LocalDateTime.of(2022, 10, 10, 11, 00),
                 LocalDateTime.of(2022, 10, 10, 14, 00), r1);
 
-        Session session1 = new SessionImpl("Session2", theme1,
+        Session session2 = new SessionImpl("Session2", theme1,
                 LocalDateTime.of(2022, 10, 10, 15, 00),
                 LocalDateTime.of(2022, 10, 10, 16, 00), r2);
 
@@ -159,8 +164,8 @@ public class TestAtoZ {
         for ( Participant p : session1.getAllPresenters() ) {
             System.out.println(p);
         }
-        /*System.out.println(conference1.getSchedule());
-
+        System.out.println(conference1.getSchedule());
+        /*
         ((ConferenceImpl)conference1).changeStateManual(ConferenceState.FINISHED);
         System.out.println("-------------------------");
         try {

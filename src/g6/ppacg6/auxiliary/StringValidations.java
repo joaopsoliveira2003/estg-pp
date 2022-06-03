@@ -14,22 +14,6 @@ package g6.ppacg6.auxiliary;
 public class StringValidations {
     
     /**
-     * Checks if a given string is valid, with some default conditions
-     * @param string the string to be checked
-     * @throws NullPointerException when the string is null
-     * @throws StringIndexOutOfBoundsException when the string is either bigger than 49 characters or empty or blank (only has spaces)
-     * @return true if the string is valid, false otherwise
-     */
-    public static boolean isValidString(String string) throws StringIndexOutOfBoundsException, NullPointerException {
-        if ( string == null ) throw new NullPointerException("String can't be null.");
-        if (  string.isBlank() || string.isEmpty() ) throw new NullPointerException(
-                "String can't be empty or blank.");
-        if ( string.length() >= 50 ) throw new
-                StringIndexOutOfBoundsException("String is not allowed to have more than 50 characters.");
-        return true;
-    }
-    
-    /**
      * Checks if a given string is valid, based on the conditions told by the caller
      * @param string the string to be checked
      * @param limitCharacters the maximum number of characters the string can have
@@ -39,9 +23,13 @@ public class StringValidations {
      */
     public static boolean isValidString(String string, int limitCharacters) throws StringIndexOutOfBoundsException, NullPointerException {
         if ( string == null ) throw new NullPointerException("String can't be null.");
-        if ( string.isBlank() || string.isEmpty() ) throw new NullPointerException("String can't be empty or blank.");
-        if ( string.length() >= limitCharacters ) throw new
-                StringIndexOutOfBoundsException("String is not allowed to have more than " + limitCharacters + " characters.");
+
+        if ( string.isBlank() || string.isEmpty() )
+            throw new NullPointerException("String can't be empty or blank.");
+
+        if ( string.length() >= limitCharacters )
+            throw new StringIndexOutOfBoundsException("String is not allowed to have more than " + limitCharacters + " characters.");
+
         return true;
     }
 }

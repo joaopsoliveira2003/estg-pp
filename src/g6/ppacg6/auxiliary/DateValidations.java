@@ -23,7 +23,7 @@ public class DateValidations {
      * @throws ConferenceException if the interval is invalid (start time after end time, start time == end time, same year)
      * @return true if the date is valid
      */
-    public static boolean isValidDate(LocalDateTime startTime, LocalDateTime endTime) throws ConferenceException {
+    public static void isValidDate(LocalDateTime startTime, LocalDateTime endTime) throws ConferenceException {
         if (startTime == null) {
             throw new ConferenceException("Invalid start date");
         } else if (endTime == null) {
@@ -35,7 +35,6 @@ public class DateValidations {
         } else if (startTime.getYear() != endTime.getYear()) {
             throw new ConferenceException("Start time and end time must be in the same year");
         }
-        return true;
     }
 
 }

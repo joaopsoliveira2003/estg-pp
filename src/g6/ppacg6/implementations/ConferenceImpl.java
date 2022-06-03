@@ -11,43 +11,65 @@
 package g6.ppacg6.implementations;
 
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
-
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
-
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
-
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Exporter;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
-import g6.ppacg6.classes.Professor;
-import g6.ppacg6.classes.Student;
+import g6.ppacg6.auxiliary.DateValidations;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
-import g6.ppacg6.auxiliary.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalUnit;
+import java.util.Arrays;
 
+/** Class responsible for the conference */
 public class ConferenceImpl implements Conference, Exporter {
-    // TODO - triple check the class
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /** The conference's name */
     private String name;
+
+    /** The conference's year */
     private LocalDateTime year;
-    
+
+    /** The conference's field */
     private String field;
+
+    /** The conference's state */
     private ConferenceState conferenceState;
-    
+
+    /** The conference's sessions array */
     private Session[] sessions;
+
+    /** The conference's number of sessions */
     private int nSessions = 0;
+
+    /** The conference's initial number of sessions */
     private static final int INITIAL_SESSIONS = 10;
-    
+
+    /** The conference's participants array */
     private Participant[] participants;
+
+    /** The conference's number of participants */
     private int nParticipants = 0;
+
+    /** The conference's initial number of participants */
     private static final int INITIAL_PARTICIPANTS = 10;
-    
-    
+
+    /**
+     * Constructor for the Conference
+     * @param name - name of the Conference
+     * @param year - year of the Conference
+     * @param field - field of the Conference
+     * @apiNote the <b>conferenceState</b> is set as on_editing, <b>nSessions</b> is set as 0, the <b>sessions</b> array is initialized with the initial size, the <b>nParticipants</b> is set as 0, the <b>participants</b> array is initialized with the initial size
+     */
     public ConferenceImpl(String name, LocalDateTime year, String field) {
         this.name = name;
         this.year = year;
@@ -58,26 +80,45 @@ public class ConferenceImpl implements Conference, Exporter {
         this.nParticipants = 0;
         this.participants = new Participant[INITIAL_PARTICIPANTS];
     }
-    
+
+    /**
+     * Gets the name of the Conference
+     * @return String
+     */
     @Override
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Gets the field of the Conference
+     * @return String
+     */
     @Override
     public String getField() {
         return this.field;
     }
 
+    /**
+     * Gets the state of the Conference
+     * @return ConferenceState
+     */
     @Override
     public ConferenceState getState() {
         return this.conferenceState;
     }
 
+    /**
+     * Gets the number of sessions of the Conference
+     * @return LocalDateTime
+     */
     public int getnSessions() {
         return this.nSessions;
     }
 
+    /**
+     * Changes the state of the Conference by checking if there is any session going on
+     */
     @Override
     public void changeState() {
         if (nSessions == 0) return;
@@ -92,24 +133,44 @@ public class ConferenceImpl implements Conference, Exporter {
         this.conferenceState = ConferenceState.FINISHED;
     }
 
+    /**
+     * Changes the conference state manually
+     * @param cs the ConferenceState
+     */
     public void changeStateManual(ConferenceState cs) {
         this.conferenceState = cs;
     }
 
+    /**
+     * Gets the year of the Conference
+     * @return int
+     */
     @Override
     public int getYear() {
         if (this.year.getYear() > LocalDateTime.now().getYear()) return LocalDateTime.now().getYear();
         return this.year.getYear();
     }
 
+    /**
+     * Gets the date of the conference
+     * @return LocalDateTime
+     */
     public LocalDateTime getDate() {
         return this.year;
     }
 
+    /**
+     * Gets the number of participants of the Conference
+     * @return int
+     */
     public int getnParticipants() {
         return this.nParticipants;
     }
-    
+
+    /**
+     * Increases the sessions array size
+     * @throws OutOfMemoryError if the computer runs out of memory (potato pc)
+     */
     private void increaseSessionsArr() throws OutOfMemoryError {
         Session[] tmpSessions = new Session[nSessions * 2];
         
@@ -123,7 +184,12 @@ public class ConferenceImpl implements Conference, Exporter {
         
         this.sessions = tmpSessions;
     }
-    
+
+    /**
+     * Finds a specific session in the sessions array
+     * @param sn Session
+     * @return position
+     */
     private int findSession(Session sn) {
         int pos = -1, x = 0;
 
@@ -135,7 +201,13 @@ public class ConferenceImpl implements Conference, Exporter {
         }
         return pos;
     }
-    
+
+    /**
+     * Adds a session to the sessions array
+     * @param sn the session to add
+     * @return true if the session was added, false otherwise
+     * @throws ConferenceException if the session is null, if there is any problem with the redimension of the sessions array, if the conference is not in editing mode, if the room assigned to the session is already occupied, if the presenter of any session is already presenting in another session or if there's any presentation already scheduled in other session
+     */
     @Override
     public boolean addSession(Session sn) throws ConferenceException {
         if (sn == null) throw new ConferenceException("The session to add can't be null.");
@@ -153,7 +225,7 @@ public class ConferenceImpl implements Conference, Exporter {
         if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) )
             throw new ConferenceException("The conference is not in editing mode.");
 
-        // ver se a sala esta ocupada, considerando startTime e duration
+        //check if occupied
         for ( Session session : this.getSessions() ) {
             if (session.getStartTime().plusMinutes(session.getDuration()).isAfter(sn.getStartTime())) {
                 if (session.getRoom().equals(sn.getRoom())) {
@@ -162,6 +234,7 @@ public class ConferenceImpl implements Conference, Exporter {
             }
         }
 
+        //check if presenter is already in another session
         for ( Session session : this.getSessions() ) {
             if (session.getStartTime().plusMinutes(session.getDuration()).isAfter(sn.getStartTime())) {
                 for (Participant p : session.getAllPresenters()) {
@@ -175,7 +248,7 @@ public class ConferenceImpl implements Conference, Exporter {
             }
         }
 
-        // se uma apresentacao de esta sessao esta noutras sessoes
+        //check if the presentation is in another session
         for ( Session session : this.getSessions() ) {
             for (Presentation p : session.getPresentations()) {
                 if (p == null) break;
@@ -187,29 +260,16 @@ public class ConferenceImpl implements Conference, Exporter {
             }
         }
 
-        sessions[nSessions++] = (Session) sn;
+        sessions[nSessions++] = sn;
         return true;
     }
 
-    public int addSession(Session[] sn) throws ConferenceException {
-        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
-
-        int x = 0;
-        
-        try {
-            for ( Session ss : sn ) {
-                if (ss == null) break;
-                if ( addSession(ss) ) {
-                    x++;
-                }
-            }
-        } catch (ConferenceException ex) {
-            throw new ConferenceException(ex.getMessage());
-        }
-        return x;
-    }
-    
-    
+    /**
+     * Removes a session from the sessions array
+     * @param i the index of the session to remove
+     * @return true if the session was removed, false otherwise
+     * @throws ConferenceException if the conference is not in editing mode, if there are no sessions to remove or if the sessions doesn't exist
+     */
     @Override
     public void removeSession(int i) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
@@ -233,33 +293,28 @@ public class ConferenceImpl implements Conference, Exporter {
         sessions[--nSessions] = null;
     }
 
-    public void removeSession(Session[] sn) throws ConferenceException {
-        if (! (this.conferenceState.equals(ConferenceState.ON_EDITING)) ) throw new ConferenceException("The conference is not in editing mode.");
-
-        if (sn == null) throw new ConferenceException("The sessions to remove can't be null.");
-        try {
-            for ( Session ss : sn ) {
-                if (ss == null) throw new NullPointerException();
-                removeSession(findSession(ss));
-            }
-        } catch (NullPointerException ex) {
-            throw new ConferenceException("Couldn't find the Session to remove.");
-        }
-    }
-    
+    /**
+     * Gets a specific session from the sessions array by index
+     * @return Session
+     * @throws ConferenceException if there are no sessions or if the session doesn't exist
+     */
     @Override
     public Session getSession(int i) throws ConferenceException {
         // POR ID
         if (nSessions == 0) throw new ConferenceException("There are no Sessions in Conferenec.");
         
         try {
-            if ( sessions[i] == null ) throw new ArrayIndexOutOfBoundsException();
-        } catch (ArrayIndexOutOfBoundsException e) {
+            if ( sessions[i] == null ) throw new NullPointerException();
+        } catch (NullPointerException e) {
             throw new ConferenceException("Couldn't find the Session.");
         }
         return sessions[i];
     }
 
+    /**
+     * Gets all the sessions of the conference
+     * @return Session[]
+     */
     @Override
     public Session[] getSessions() {
         Session[] tempSessions = new Session[this.nSessions];
@@ -270,7 +325,10 @@ public class ConferenceImpl implements Conference, Exporter {
         return tempSessions;
     }
 
-    
+    /**
+     * Increases the Participants array size
+     * @throws OutOfMemoryError if the computer runs out of memory
+     */
     private void increaseParticipantsArr() throws OutOfMemoryError {
         Participant[] tmpParticipants = new Participant[nParticipants * 2];
         
@@ -284,7 +342,12 @@ public class ConferenceImpl implements Conference, Exporter {
         
         this.participants = tmpParticipants;
     }
-    
+
+    /**
+     * Finds a specific participant in the participants array
+     * @param p Participant
+     * @return position
+     */
     private int findParticipant(Participant p) {
         int pos = -1, x = 0;
         
@@ -296,7 +359,12 @@ public class ConferenceImpl implements Conference, Exporter {
         }
         return pos;
     }
-    
+
+    /**
+     * Checks-in a participant to the conference
+     * @param p Participant
+     * @throws ConferenceException if the conference is not in progress, if there are no sessions, if the participant is null, if the participant is already checked-in or with any memory error
+     */
     @Override
     public void checkIn(Participant p) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.IN_PROGRESS)) ) throw new ConferenceException("The conference is not in progress.");
@@ -324,11 +392,17 @@ public class ConferenceImpl implements Conference, Exporter {
                 ((SessionImpl) this.sessions[x]).addParticipant(p);
             }
         } catch (SessionException ex) {
-            //do nothing
+            // do nothing
             assert true;
         }
     }
 
+    /**
+     * Gets a specific participant from the participants array by id
+     * @param i id
+     * @return Participant
+     * @throws ConferenceException if there are no participants checked-in
+     */
     @Override
     public Participant getParticipant(int i) throws ConferenceException {
         if (nParticipants == 0) throw new ConferenceException("There are no Participants checked-in");
@@ -345,11 +419,19 @@ public class ConferenceImpl implements Conference, Exporter {
         return null;
     }
 
+    /**
+     * Gets all the participants of the conference
+     * @return Participant[]
+     */
     @Override
     public Participant[] getParticipants() {
         return this.participants;
     }
 
+    /**
+     * Gets all participants that are speakers
+     * @return Participant[]
+     */
     @Override
     public Participant[] getSpeakerParticipants() {
         //remove duplicates ones
@@ -370,6 +452,12 @@ public class ConferenceImpl implements Conference, Exporter {
         return speakerParticipants;
     }
 
+    /**
+     * Finds a specific room by id
+     * @param i id
+     * @return true if the room exists, false otherwise
+     * @throws ConferenceException - if there are no sessions
+     */
     private boolean findRoom(int i) throws ConferenceException {
         if ( nSessions == 0 ) throw new ConferenceException("There are no Sessions in the Conference.");
 
@@ -379,6 +467,14 @@ public class ConferenceImpl implements Conference, Exporter {
         return false;
     }
 
+    /**
+     * Gets the sessions of a specific room by id and time interval
+     * @param i id
+     * @param ldt start time
+     * @param ldt1 end time
+     * @return Session[]
+     * @throws ConferenceException if the room ID is negative, if the room doesn't exists, if the conference is not in progress and if the Dates fail the validation
+     */
     @Override
     public Session[] getRoomSessions(int i, LocalDateTime ldt, LocalDateTime ldt1) throws ConferenceException {
         if ( i < 0 ) throw new ConferenceException("The room ID can't be negative.");
@@ -408,6 +504,10 @@ public class ConferenceImpl implements Conference, Exporter {
         return tempSessions;
     }
 
+    /**
+     * Gets all rooms of the conference
+     * @return Room[]
+     */
     @Override
     public Room[] getRooms() {
         Room[] tempRooms = new Room[this.nSessions];
@@ -442,6 +542,11 @@ public class ConferenceImpl implements Conference, Exporter {
         return rooms;
     }
 
+    /**
+     * Generates speaker certificates for all speakers
+     * @param string file path
+     * @throws ConferenceException if the conference is not finished or if the file path is invalid
+     */
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished.");
@@ -493,6 +598,11 @@ public class ConferenceImpl implements Conference, Exporter {
         }
     }
 
+    /**
+     * Generates participant certificates for all participants
+     * @param string file path
+     * @throws ConferenceException if the conference is not finished or if the file path is invalid
+     */
     @Override
     public void generateParticipantCertificates(String string) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished.");
@@ -522,6 +632,11 @@ public class ConferenceImpl implements Conference, Exporter {
     }
 
 
+    /**
+     * Generates a schedule for the conference, in this method we use the Bubble Sort Algorithm
+     * to sort the sessions and presentations by start time
+     * @return String
+     */
     @Override
     public String getSchedule() {
         String str = this.getName() + " " + this.getYear() + "\n";
@@ -541,8 +656,8 @@ public class ConferenceImpl implements Conference, Exporter {
         for ( Session s : tmpSessions ) {
             if ( s == null ) break;
             str += "\n" + s.getName() + " /" + s.getSessionTheme() + "\\ at " + s.getRoom().getName() +
-                "\n" + s.getStartTime() + " - " + ((SessionImpl)s).getEndTime() +
-                    "\nPresentations:\n";
+                "\n" + s.getStartTime().format(dateTimeFormatter) + " - "
+                    + ((SessionImpl)s).getEndTime().format(dateTimeFormatter) + "\nPresentations:\n";
 
             Presentation[] tmpPresentations = s.getPresentations();
             for ( int a = 1; a < tmpPresentations.length; a++ ) {
@@ -558,7 +673,7 @@ public class ConferenceImpl implements Conference, Exporter {
 
             for ( Presentation p : tmpPresentations ) {
                 if ( p == null ) break;
-                str += "  " + p.getTitle() + " Presenter: " + p.getPresenter().getName() + "\n\t" +
+                str += "  " + p.getTitle() + " | Presenter: " + p.getPresenter().getName() + "\n\t" +
                 ((PresentationImpl)p).getStartTime().getHour() + ":" + ((PresentationImpl)p).getStartTime().getMinute()
                  + " - " + ((PresentationImpl)p).getEndTime().getHour() + ":" + ((PresentationImpl)p).getEndTime().getMinute() + "\n";
             }
@@ -567,28 +682,31 @@ public class ConferenceImpl implements Conference, Exporter {
         return str;
     }
 
+    /**
+     * Gets the number of participants by session
+     * @return Statistics[]
+     */
     @Override
     public Statistics[] getNumberOfParticipantsBySession() {
-        //if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
 
         Statistics[] tempStatistics = new Statistics[nSessions];
-        System.out.println(nSessions);
+
         for ( int x = 0; x < nSessions; x++ ) {
             tempStatistics[x] = new StatisticsImpl(sessions[x].getName(), ((SessionImpl) sessions[x]).getnParticipants());
         }
         return tempStatistics;
     }
 
+    /**
+     * Gets the number of sessions by room
+     * @return Statistics[]
+     */
     @Override
     public Statistics[] getNumberOfSessionsByRoom() {
-        // We check on JsonGenerator if the conference is finished, since we can't throw an exception here
-        //if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) return null;
-
-        System.out.println("nSessions " + this.nSessions);
 
         Room[] rooms = this.getRooms();
         int nRooms = rooms.length;
-        System.out.println("nRooms" + nRooms);
+
         Statistics[] tempStatistics = new Statistics[nRooms];
         int[] sessionsByRoom = new int[nRooms];
 
@@ -604,13 +722,17 @@ public class ConferenceImpl implements Conference, Exporter {
             }
         }
 
-        System.out.println("nrooms " + nRooms);
         for (int x = 0; x < nRooms; x++) {
             tempStatistics[x] = new StatisticsImpl(rooms[x].getName(), sessionsByRoom[x]);
         }
         return tempStatistics;
     }
 
+    /**
+     * Exports all data to json files for posterior use
+     * @return String (we suppose that this should be an array of strings, not just a string)
+     * @throws IOException if the conference is not finished, if the conference has no sessions to export or any other error with files
+     */
     @Override
     public String export() throws IOException {
 
@@ -636,7 +758,11 @@ public class ConferenceImpl implements Conference, Exporter {
             throw new IOException(e.getMessage());
         }
 
-        return "ta bom";
+        try {
+            return this.generateNumberOfSessionsByRoom(this.getNumberOfSessionsByRoom()) + this.generateNumberOfParticipantsBySession(this.getNumberOfParticipantsBySession());
+        } catch (ConferenceException e) {
+            throw new IOException(e.getMessage());
+        }
     }
 
 
@@ -717,54 +843,10 @@ public class ConferenceImpl implements Conference, Exporter {
     }
 
     /**
-     * Generates a JSON string of a Outlabeled Pie chart
-     * @param labels the labels of the graph
-     * @param data the data of the graph
-     * @return the JSON string
+     * Compares two Conference objects, based on the year of the conference
+     * @param obj the object to compare
+     * @return true if the year of the conference is the same, false otherwise
      */
-    public String generateOutlabeledPie(String[] labels, String[] data) {
-        String cleanLabels = "", cleanData = "";
-
-        for (int i = 0; i < labels.length; i++) {
-            cleanLabels += "'" + labels[i] + "'";
-            if (i < labels.length - 1) {
-                cleanLabels += ",";
-            }
-        }
-
-        for (int i = 0; i < data.length; i++) {
-            cleanData += "'" + data[i] + "'";
-            if (i < data.length - 1) {
-                cleanData += ",";
-            }
-        }
-
-        return String.format("{\n" +
-                "  \"type\": \"outlabeledPie\",\n" +
-                "  \"data\": {\n" +
-                "    \"labels\": [%s],\n" +
-                "    \"datasets\": [{\n" +
-                "        \"backgroundColor\": [\"#FF3784\", \"#36A2EB\", \"#4BC0C0\", \"#F77825\", \"#9966FF\"],\n" +
-                "        \"data\": [%s]\n" +
-                "    }]\n" +
-                "  },\n" +
-                "  \"options\": {\n" +
-                "    \"plugins\": {\n" +
-                "      \"legend\": false,\n" +
-                "      \"outlabels\": {\n" +
-                "        \"color\": \"white\",\n" +
-                "        \"stretch\": 35,\n" +
-                "        \"font\": {\n" +
-                "          \"resizable\": true,\n" +
-                "          \"minSize\": 12,\n" +
-                "          \"maxSize\": 18\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}", cleanLabels, cleanData);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
@@ -778,5 +860,53 @@ public class ConferenceImpl implements Conference, Exporter {
         return ( this.year.getYear() == other.year.getYear() );
     }
 
-    // TODO toString
+    /**
+     * List all the Sessions in the conference
+     * @return String
+     */
+    public String listSessions() {
+        String str = "";
+
+        if ( nSessions == 0 ) return "No Sessions";
+
+        for (Session s : this.sessions) {
+            if ( s == null ) break;
+            str += s.toString() + "\n";
+        }
+        return str;
+    }
+
+    /**
+     * List all the Participants in the conference
+     * @return String
+     */
+    public String listParticipants() {
+        String str = "";
+
+        if ( nParticipants == 0 ) return "No Participants";
+
+        for (Participant p : this.participants) {
+            if ( p == null ) break;
+            str += p.toString() + "\n";
+        }
+        return str;
+    }
+
+    /**
+     * List all the properties of the conference
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return "ConferenceImpl{" +
+                "name='" + name + '\'' +
+                ", year=" + this.getYear() +
+                ", field='" + field + '\'' +
+                ", conferenceState=" + conferenceState +
+                ", sessions=[" + listSessions() +
+                "], nSessions=" + nSessions +
+                ", participants=[" + listParticipants() +
+                "], nParticipants=" + nParticipants +
+                '}';
+    }
 }

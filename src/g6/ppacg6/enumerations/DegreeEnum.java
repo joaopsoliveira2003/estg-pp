@@ -10,11 +10,12 @@
 
 package g6.ppacg6.enumerations;
 
+/** Enumeration of courses */
 public enum DegreeEnum {
     CTESP, LICENCIATURA, MESTRADO, DOUTORAMENTO, POS_DOUTORAMENTO;
     
      /**
-     * Return a more visual representation of a given degree
+     * Returns a more visual representation of a given degree
      * @param degree - DegreeEnum
      * @return String
      */

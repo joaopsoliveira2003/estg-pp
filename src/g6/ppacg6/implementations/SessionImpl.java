@@ -16,6 +16,7 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
+import g6.ppacg6.auxiliary.DateValidations;
 import g6.ppacg6.classes.Equipment;
 import g6.ppacg6.classes.Theme;
 
@@ -24,8 +25,6 @@ import java.time.LocalDateTime;
 
 /** Class responsible for the sessions */
 public class SessionImpl implements Session {
-    // TODO - triple check the class
-
     /** The id */
     private int id = 0;
 
@@ -50,15 +49,17 @@ public class SessionImpl implements Session {
     /** The array of presentations */
     private Presentation[] presentations;
 
-
-    private static final int MAX_PRESENTATIONS = 10;
+    /** The initial capacity of the array of Presentations */
+    private static final int INITIAL_PRESENTATIONS = 10;
 
     /** The number of participants */
     private int nParticipants = 0;
 
     /** The array of participants */
     private Participant[] participants;
-    private static final int MAX_PARTICIPANTS = 10;
+
+    /** The initial capacity of the array of Participants */
+    private static final int INITIAL_PARTICIPANTS = 10;
 
     /** The session theme */
     private Theme sessionTheme;
@@ -83,9 +84,9 @@ public class SessionImpl implements Session {
         this.duration = 0;
         this.room = room;
         this.nPresentations = 0;
-        this.presentations = new Presentation[MAX_PRESENTATIONS];
+        this.presentations = new Presentation[INITIAL_PRESENTATIONS];
         this.nParticipants = 0;
-        this.participants = new Participant[MAX_PARTICIPANTS];
+        this.participants = new Participant[INITIAL_PARTICIPANTS];
     }
 
     /**
@@ -106,19 +107,20 @@ public class SessionImpl implements Session {
         return this.name;
     }
 
-
+    /**
+     * Gets the duration in minutes of the session
+     * @return int
+     */
     @Override
     public int getDuration() {
         Duration startTimeD = Duration.between(this.startTime, LocalDateTime.now());
         Duration endTimeD = Duration.between(this.endTime, LocalDateTime.now());
         return (int) (startTimeD.toMinutes() - endTimeD.toMinutes());
-        //return (int) this.endTime.getMinute() - this.startTime.getMinute();
     }
 
-    //TODO: check the method for negative values
     /**
-     * Gets the maximum duration per presentation
-     * @return timeLeft
+     * Gets the maximum available duration left for a presentation
+     * @return int - timeLeft in minutes
      */
     @Override
     public int getMaxDurationPerPresentation() {
@@ -189,17 +191,32 @@ public class SessionImpl implements Session {
         }
         return pos;
     }
-    
+
+    /**
+     * Adds a new presentation
+     * @param prsntn the presentation
+     * @return position
+     * @throws SessionException if the presentation is null, if there is no time left, if there is any memory error, if the presentation is already in the session, if the room doesn't have the equipment needed
+     */
     @Override
     public boolean addPresentation(Presentation prsntn) throws SessionException {
-        if (prsntn == null) throw new SessionException("Can't add a Presentation that is null");
+        if ( prsntn == null ) throw new SessionException("Can't add a Presentation that is null");
+
+        if ( ((PresentationImpl)prsntn).getEndTime().isAfter(this.endTime) ) {
+            throw new SessionException("Can't add a Presentation that ends after the session");
+        }
+
+        if ( ((PresentationImpl)prsntn).getEndTime().isAfter(this.endTime) ) throw new
+                SessionException("The presentation is after the session's end time");
+
+        if ( ((PresentationImpl)prsntn).getStartTime().isBefore(this.startTime) ) throw new
+                SessionException("The presentation is before the session's start time");
 
         if ( prsntn.getDuration() > this.getMaxDurationPerPresentation() ) {
-            throw new SessionException("There is no time left in the session to add the" +
-                    " Presentation.");
+            throw new SessionException("There is no time left in the session to add the Presentation.");
         }
         
-        if (nPresentations == presentations.length) throw new 
+        if ( nPresentations == presentations.length ) throw new
         SessionException("Can't add more Presentations to this Session");
         
         int pos = findPresentation(prsntn);
@@ -214,10 +231,13 @@ public class SessionImpl implements Session {
         for ( int x = 0; x < nEquip; x++ ) {
             if ( requiredEquipments[x] == null ) break;
             if (! (requiredEquipments[x].equals( roomEquipments[x] )) ) {
-                throw new SessionException("The Room of the Session does not have the required Equipments to accomodate the Presentation");
+                throw new SessionException("The Room of the Session does not have the required Equipments to accommodate the Presentation");
             }
         }
 
+        /* Try to add the Presenter to the array of Participants
+        if the Presenter is already in the array, it will not be added again,
+        otherwise (finally) we added the presentation to the array of presentations */
         try {
             this.addParticipant(prsntn.getPresenter());
         } catch (SessionException e) {
@@ -228,18 +248,26 @@ public class SessionImpl implements Session {
 
         return true;
     }
-    
+
+    /**
+     * Remove a presentation given the ID
+     * @param i - the ID of the presentation to remove
+     * @throws SessionException - if the presentation does not exist, or there are no sessions to remove
+     */
     @Override
     public void removePresentation(int i) throws SessionException {
-        if (nPresentations == 0) throw new SessionException("There are no sessions to remove");
-        
-        try {
-            if ( presentations[i] == null ) throw new ArrayIndexOutOfBoundsException();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new SessionException("Couldnt find the presentation to remove.");
+        if ( nPresentations == 0 ) throw new SessionException("There are no sessions to remove");
+
+        boolean found = false;
+        for ( int p = 0; p < nPresentations; p++ ) {
+            if ( ((PresentationImpl)this.presentations[p]).getId() == i ) {
+                presentations[i] = null;
+                found = true;
+                break;
+            }
         }
-        
-        presentations[i] = null;
+
+        if (! (found) ) throw new SessionException("The Presentation does not exist in the Session");
 
         for ( int x = i; x < nPresentations - 1; x++ ) {
             if ( presentations[x] == null ) {
@@ -250,19 +278,32 @@ public class SessionImpl implements Session {
         presentations[--nPresentations] = null;
     }
 
-    
+    /**
+     * Get a given presentation given the ID
+     * @param i - the ID of the presentation to get
+     * @return Presentation
+     * @throws SessionException - if the presentation does not exist, or there are no sessions to get
+     */
     @Override
     public Presentation getPresentation(int i) throws SessionException {
         if (nPresentations == 0) throw new SessionException("There are no presentatins in the session.");
 
+        boolean found = false;
         for ( int x = 0; x < nPresentations; x++ ) {
             if (this.presentations[x].getId() == i) {
-                return presentations[i];
+                found = true;
+                break;
             }
         }
+
+        if (! (found) ) throw new SessionException("The Presentation does not exist in the Session");
         return presentations[i];
     }
 
+    /**
+     * Gets the presentations array, without null values
+     * @return the presentations array
+     */
     @Override
     public Presentation[] getPresentations() {
         Presentation[] tmpPresentations = new Presentation[nPresentations];
@@ -272,9 +313,12 @@ public class SessionImpl implements Session {
         }
 
         return tmpPresentations;
-        //return this.presentations;
     }
 
+    /**
+     * List all the presentations in the session
+     * @return String
+     */
     public String listPresentations() {
         String str = "";
         if (nPresentations == 0) {
@@ -288,7 +332,12 @@ public class SessionImpl implements Session {
             return str;
         }
     }
-    
+
+    /**
+     * Check if the session has started, this is, if there is any presentation in the session
+     * that has not started yet (false, in this case; true, otherwise)
+     * @return boolean
+     */
     @Override
     public boolean isStarted() {
 
@@ -301,22 +350,36 @@ public class SessionImpl implements Session {
         return false;
     }
 
+    /**
+     * Get all the Participants that are Presenters of a Session
+     * @return Participant[]
+     */
     @Override
     public Participant[] getAllPresenters() {
         Participant[] tempParticipant = new Participant[nPresentations];
+
         for ( int x = 0; x < nPresentations; x++ ) {
             tempParticipant[x] = presentations[x].getPresenter();
         }
+
         return tempParticipant;
     }
 
+    /**
+     * Get the number of presentations in the session
+     * @return int
+     */
     @Override
     public int getNumberOfPresentations() {
         return this.nPresentations;
     }
 
-    //equals
 
+    /**
+     * Find a Participant in the Session
+     * @param participant - the participant to find
+     * @return int - the position of the participant in the array of participants
+     */
     private int findParticipant(Participant participant) {
         int pos = -1, x = 0;
         if (nParticipants == 0) return pos;
@@ -330,11 +393,30 @@ public class SessionImpl implements Session {
         return pos;
     }
 
+    private void increaseParticipantArr() throws OutOfMemoryError {
+        Participant[] tmpParticipants = new Participant[participants.length * 2];
+
+        try {
+            for ( int x = 0; x < participants.length; x++ ) {
+                tmpParticipants[x] = participants[x];
+            }
+        } catch (OutOfMemoryError e) {
+            throw new OutOfMemoryError("There is no more memory to allocate the new array of participants");
+        }
+
+        participants = tmpParticipants;
+    }
+
+    /**
+     * Add a Participant to the Session
+     * @param participant - the participant to add
+     * @return boolean - true if the participant was added, false otherwise
+     * @throws SessionException - if the participant is already in the session, or is null
+     */
     public boolean addParticipant(Participant participant) throws SessionException {
         if (participant == null) throw new SessionException("Can't add a Participant that is null");
 
-        if (nParticipants == participants.length) throw new
-        SessionException("Can't add more Participants to this Session");
+        if (nParticipants == participants.length) increaseParticipantArr();
 
         int pos = findParticipant(participant);
 
@@ -344,6 +426,12 @@ public class SessionImpl implements Session {
         return true;
     }
 
+    /**
+     * Delete a Participant from the Session
+     * @param participant - the participant to delete
+     * @return boolean - true if the participant was deleted, false otherwise
+     * @throws SessionException - when the participant is not in the session, or is null
+     */
     public boolean delParticipant(Participant participant) throws SessionException {
         if (participant == null) throw new SessionException("Can't remove a Participant that is null");
 
@@ -359,14 +447,51 @@ public class SessionImpl implements Session {
         return true;
     }
 
+    /**
+     * Get the participants array, without null values
+     * @return Participant[]
+     * @throws SessionException - if there are no participants in the session
+     */
     public Participant[] getParticipants() throws SessionException {
-        try {
-            return this.participants;
-        } catch ( NullPointerException e ) {
-            throw new SessionException("There are no participants in the session.");
+        if ( nParticipants == 0 ) throw new SessionException("There are no participants in the session");
+
+        Participant[] tmpParticipants = new Participant[nParticipants];
+
+        for ( int x = 0; x < nParticipants; x++ ) {
+            tmpParticipants[x] = participants[x];
         }
+
+        return tmpParticipants;
     }
 
+
+    /**
+     * Compare two sessions, by ID, startTime and endTime
+     * We first check if the session is null or the same session
+     * Then we check if they have the same ID, if so, true, otherwise
+     * we check if the startTime and endTime are the same, if so, true, otherwise false
+     * @param obj - the object to compare to
+     * @return boolean, true if the sessions are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+
+        if (obj == null) return false;
+
+        if (getClass() != obj.getClass()) return false;
+
+        final SessionImpl other = (SessionImpl) obj;
+
+        if ( this.id == other.id ) return true;
+
+        return ( this.startTime.isEqual(other.startTime) && this.endTime.isEqual(other.endTime) );
+    }
+
+    /**
+     * List all the properties of the sessions
+     * @return String
+     */
     @Override
     public String toString() {
         return "SessionImpl{" + "id=" + id + ", name=" + name + ", duration=" + 
@@ -375,7 +500,4 @@ public class SessionImpl implements Session {
         listPresentations() + "], sessionTheme=" + sessionTheme + ", room=" + room + '}';
     }
 
-    
-    
-    
 }

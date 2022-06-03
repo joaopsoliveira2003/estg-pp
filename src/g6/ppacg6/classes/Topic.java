@@ -10,24 +10,32 @@
 
 package g6.ppacg6.classes;
 
+import g6.ppacg6.exceptions.TopicException;
+
+/** Class that represents a topic */
 public class Topic {
-    // TODO - create custom exception and double check the class
+
+    /** The Topic's name. */
     private String topic;
+
+    /** The Topic's ID. */
     private int id = 0;
+
+    /** The class's ID Counter */
     private static int CID = 0;
 
     /**
      * Constructor for the Topic
      * @param topic - Name of the Topic
+     * @apiNote the <b>id</b> is based on the CID variable
      */
     public Topic(String topic) {
         this.id = ++CID;
         this.topic = topic;
     }
 
-    
     /**
-     * Get the ID of the Topic
+     * Gets the ID of the Topic
      * @return int
      */
     public int getId() {
@@ -35,7 +43,7 @@ public class Topic {
     }
     
     /**
-     * Get the topic
+     * Gets the topic
      * @return String
      */
     public String getTopic() {
@@ -43,18 +51,19 @@ public class Topic {
     }
 
     /**
-     * Set the topic
+     * Sets the topic
      * @param topic - String
      */
-    public void setTopic(String topic) {
+    public void setTopic(String topic) throws TopicException {
+        if ( topic == null ) throw new TopicException("Topic cannot be null");
         this.topic = topic;
     }
 
 
     /**
-     * Compare two Topic(s), by ID and topic
+     * Compares two Topic(s), by ID and topic name
      * @param obj - Topic
-     * @return boolean
+     * @return boolean true if equals, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -73,13 +82,11 @@ public class Topic {
 
 
     /**
-     * List all the properties of the Topic
+     * Lists all the properties of the Topic
      * @return String
      */
     @Override
     public String toString() {
         return "Topic{" + topic + ", id=" + id + '}';
     }
-
-
 }

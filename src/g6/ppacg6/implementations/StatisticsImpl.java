@@ -4,7 +4,6 @@ import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 
 /** Class responsible for the statistics */
 public class StatisticsImpl implements Statistics {
-    // TODO - check the class
     /** The description */
     private String description;
 

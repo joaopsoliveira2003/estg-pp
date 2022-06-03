@@ -10,11 +10,12 @@
 
 package g6.ppacg6.enumerations;
 
+/** Enumeration of equipments */
 public enum EquipmentEnum {
     COMPUTER, PROJECTOR, MOBILE_PHONE, LASER_POINTER;
     
      /**
-     * Return a more visual representation of a given course
+     * Returns a more visual representation of a given course
      * @param equip - EquipmentEnum
      * @return String
      */

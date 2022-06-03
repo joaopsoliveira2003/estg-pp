@@ -11,32 +11,46 @@
 package g6.ppacg6.classes;
 
 import g6.ppacg6.auxiliary.StringValidations;
+import g6.ppacg6.exceptions.ThemeException;
+import g6.ppacg6.exceptions.TopicException;
 
+/** Class that represents a theme */
 public class Theme {
-    // TODO - create custom exception and double check the class
+
+    /** The ID of the theme. */
     private int id = 0;
+
+    /** The CID - counter ID of the theme. */
     private static int CID = 0;
-    
+
+    /** The name of the theme. */
     private String theme;
-    
+
+    /** Array of Topics of the Theme. */
     private Topic[] topics;
+
+    /** The number of topics of the theme. */
     private int nTopics = 0;
-    private static final int MAX_TOPICS = 10;
+
+    /** The Initial Size of the topics array. */
+    private static final int INITIAL_TOPICS = 10;
+
 
     /**
-     * Constructor for a Theme
-     * @param theme - Name of the Theme
+     * Constructor of the Theme.
+     * @param theme the name of the theme
+     * @apiNote the <b>id</b> is based on the CID variable, <b>nTopics</b> is set as 0 and the <b>topics</b> array is set to the initial size
      */
     public Theme(String theme) {
         this.id = ++CID;
         this.theme = theme;
         this.nTopics = 0;
-        this.topics = new Topic[MAX_TOPICS];
+        this.topics = new Topic[INITIAL_TOPICS];
     }
     
 
     /**
-     * Get the theme
+     * Gets the theme
      * @return String
      */
     public String getTheme() {
@@ -44,19 +58,20 @@ public class Theme {
     }
 
     /**
-     * Set the theme
-     * @param theme - String
+     * Sets the theme, if the theme is valid
+     * @param theme String
+     * @throws ThemeException when the string is not valid
      */
-    public void setTheme(String theme) throws Exception {
+    public void setTheme(String theme) throws ThemeException {
         try {
             if (StringValidations.isValidString(theme, 250) ) this.theme = theme;
         } catch (StringIndexOutOfBoundsException | NullPointerException e) {
-            throw new Exception(e.getMessage());
+            throw new ThemeException(e.getMessage());
         }
     }
 
     /**
-     * Get the number of topics of the Theme
+     * Gets the number of topics of the Theme
      * @return nTopics - int
      */
     public int getnTopics() {
@@ -65,9 +80,9 @@ public class Theme {
 
     
     /**
-     * Find a given Topic in the array topics[]
+     * Finds a given Topic in the array topics[]
      * @param topic - Topic to be found
-     * @return int
+     * @return int - index of the topic in the array topics[]
      */
     private int findTopic(Topic topic) {
         int pos = -1, x = 0;
@@ -82,16 +97,16 @@ public class Theme {
     }
     
     /**
-     * Add a Topic to the array topics[]
+     * Adds a Topic to the array topics[]
      * @param topic - Topic to be added
-     * @return boolean
+     * @return boolean, true if the topic was added, false otherwise
      */
-    public boolean addTopic(Topic topic) {
-        if (topic == null) throw new NullPointerException("The topic to add cant be null.");
+    public boolean addTopic(Topic topic) throws TopicException {
+        if (topic == null) throw new TopicException("The topic to add cant be null.");
         
         int pos = findTopic(topic);
         
-        if (nTopics == topics.length) return false;
+        if (nTopics == topics.length) throw new TopicException("Coudln't add the topic, the array is full.");
         
         if (pos != -1) return false;
         
@@ -100,24 +115,28 @@ public class Theme {
     }
     
     /**
-     * Add an array of Topic[] to the array topics[]
+     * Adds an array of Topic[] to the array topics[]
      * @param topics - array of Topic to be added
      * @return x - number of topics successfully added
      */
-    public int addTopic(Topic[] topics) {
+    public int addTopic(Topic[] topics) throws TopicException {
         int x = 0;
-        
+
         for ( Topic topic : topics ) {
             if ( topic == null ) break;
-            if (addTopic(topic)) {
-                x++;
+            try {
+                if (addTopic(topic)) {
+                    x++;
+                }
+            } catch (TopicException e) {
+                throw new TopicException(e.getMessage());
             }
         }
         return x;
     }
     
     /**
-     * Remove a Topic from the array topics[]
+     * Removes a Topic from the array topics[]
      * @param topic - Topic to be removed
      * @return boolean
      * @throws NullPointerException - if the given Topic is null
@@ -140,7 +159,7 @@ public class Theme {
     }
     
     /**
-     * Remove an array Topic[] from the array topics[]
+     * Removes an array Topic[] from the array topics[]
      * @param topics - array of Topic to be removed
      * @return int - number of topics successfully removed
      */
@@ -157,7 +176,7 @@ public class Theme {
     }
 
     /**
-     * List all the topics of the array topics[]
+     * Lists all the topics of the array topics[]
      * @return String
      */
     public String listTopics() {
@@ -176,7 +195,7 @@ public class Theme {
  
 
     /**
-     * Compare two Theme(s), by ID and theme
+     * Compares two Theme(s), by ID and theme
      * If the @obj is not from the same Class, then return false
      * @param obj - Object to be compared
      * @return boolean
@@ -198,7 +217,7 @@ public class Theme {
 
 
     /**
-     * List all the properties of the Theme
+     * Lists all the properties of the Theme
      * @return String
      */
     @Override
