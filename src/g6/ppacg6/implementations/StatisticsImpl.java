@@ -2,11 +2,20 @@ package g6.ppacg6.implementations;
 
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 
+/** Class responsible for the statistics */
 public class StatisticsImpl implements Statistics {
     // TODO - check the class
+    /** The description */
     private String description;
+
+    /** The value */
     private double value;
 
+    /**
+     * Constructor
+     * @param description the description
+     * @param value the value
+     */
     public StatisticsImpl(String description, double value) {
         this.description = description;
         this.value = value;
@@ -22,7 +31,7 @@ public class StatisticsImpl implements Statistics {
     }
 
     /**
-     * Sets the value of the statistics
+     * Sets the description of the statistics
      * @param description - String
      */
     public void setDescription(String description) {

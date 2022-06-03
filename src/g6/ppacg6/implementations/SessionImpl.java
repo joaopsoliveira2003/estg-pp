@@ -7,6 +7,7 @@
  * Número: 8210291
  * Turma: LSIRC11T2
  */
+
 package g6.ppacg6.implementations;
 
 import estg.ipp.pt.tp02_conferencesystem.enumerations.PresentationState;
@@ -16,35 +17,63 @@ import estg.ipp.pt.tp02_conferencesystem.interfaces.Presentation;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Room;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Session;
 import g6.ppacg6.classes.Equipment;
-import g6.ppacg6.classes.Professor;
 import g6.ppacg6.classes.Theme;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-
+/** Class responsible for the sessions */
 public class SessionImpl implements Session {
     // TODO - triple check the class
+
+    /** The id */
     private int id = 0;
+
+    /** The class's id */
     private static int CID = 0;
-    
+
+    /** The name */
     private String name;
+
+    /** The duration */
     private int duration;
+
+    /** The start time */
     private LocalDateTime startTime;
+
+    /** The end time */
     private LocalDateTime endTime;
-    
+
+    /** The number of presentations */
     private int nPresentations = 0;
+
+    /** The array of presentations */
     private Presentation[] presentations;
+
+
     private static final int MAX_PRESENTATIONS = 10;
 
+    /** The number of participants */
     private int nParticipants = 0;
+
+    /** The array of participants */
     private Participant[] participants;
     private static final int MAX_PARTICIPANTS = 10;
-    
+
+    /** The session theme */
     private Theme sessionTheme;
-    
+
+    /** The session room */
     private Room room;
 
+    /**
+     * Constructor
+     * @param name the name
+     * @param sessionTheme the session theme
+     * @param startTime the start time
+     * @param endTime the end time
+     * @param room the room
+     */
     public SessionImpl(String name, Theme sessionTheme, LocalDateTime startTime, LocalDateTime endTime, Room room) {
         this.id = ++CID;
         this.name = name;
@@ -58,17 +87,25 @@ public class SessionImpl implements Session {
         this.nParticipants = 0;
         this.participants = new Participant[MAX_PARTICIPANTS];
     }
-    
-    
+
+    /**
+     * Gets the id
+     * @return id
+     */
     @Override
     public int getId() {
         return this.id;
     }
 
+    /**
+     * Gets the name
+     * @return name
+     */
     @Override
     public String getName() {
         return this.name;
     }
+
 
     @Override
     public int getDuration() {
@@ -78,10 +115,14 @@ public class SessionImpl implements Session {
         //return (int) this.endTime.getMinute() - this.startTime.getMinute();
     }
 
+    //TODO: check the method for negative values
+    /**
+     * Gets the maximum duration per presentation
+     * @return timeLeft
+     */
     @Override
     public int getMaxDurationPerPresentation() {
-        int timeLeft =
-                (int) Duration.between(this.startTime, this.endTime).toMinutes();
+        int timeLeft = (int) Duration.between(this.startTime, this.endTime).toMinutes();
 
         for (int i = 0; i < this.nPresentations; i++) {
             timeLeft -= this.presentations[i].getDuration();
@@ -89,29 +130,53 @@ public class SessionImpl implements Session {
         return (int) timeLeft;
     }
 
+    /**
+     * Gets the start time
+     * @return startTime
+     */
     @Override
     public LocalDateTime getStartTime() {
         return this.startTime;
     }
 
+    /**
+     * Gets the end time
+     * @return endTime
+     */
     public LocalDateTime getEndTime() {
         return this.endTime;
     }
 
+    /**
+     * Gets the theme of the session
+     * @return String
+     */
     @Override
     public String getSessionTheme() {
         return this.sessionTheme.getTheme();
     }
-    
+
+    /**
+     * Gets the room of the session
+     * @return Room
+     */
     @Override
     public Room getRoom() {
         return this.room;
     }
 
+    /**
+     * Gets the number of participants
+     * @return nParticipants
+     */
     public int getnParticipants() {
         return this.nParticipants;
     }
-    
+
+    /**
+     * Finds a specific presentation
+     * @return position
+     */
     private int findPresentation(Presentation prsntn) {
         int pos = -1, x = 0;
         if (nPresentations == 0) return pos;
