@@ -200,7 +200,14 @@ public class SessionImpl implements Session {
 
     @Override
     public Presentation[] getPresentations() {
-        return this.presentations;
+        Presentation[] tmpPresentations = new Presentation[nPresentations];
+
+        for ( int p = 0; p < nPresentations; p++ ) {
+            tmpPresentations[p] = presentations[p];
+        }
+
+        return tmpPresentations;
+        //return this.presentations;
     }
 
     public String listPresentations() {

@@ -51,58 +51,52 @@ public class TestAtoZ {
         }
 
         Presentation presentation1 = new PresentationImpl("Pres1",
-                LocalDateTime.of(2022, 10, 10, 10, 00),
-                LocalDateTime.of(2022, 10, 10, 10, 30), professor1);
+                LocalDateTime.of(2022, 10, 10, 12, 00),
+                LocalDateTime.of(2022, 10, 10, 12, 15), professor1);
 
         Presentation presentation2 = new PresentationImpl("Pres2",
-                LocalDateTime.of(2022, 10, 10, 10, 10),
-                LocalDateTime.of(2022, 10, 10, 10, 30), student1);
+                LocalDateTime.of(2022, 10, 10, 12, 20),
+                LocalDateTime.of(2022, 10, 10, 12, 50), student1);
 
         Presentation presentation3 = new PresentationImpl("Pres3",
-                LocalDateTime.of(2022, 10, 10, 12, 10),
-                LocalDateTime.of(2022, 10, 10, 12, 30), student1);
+                LocalDateTime.of(2022, 10, 10, 13, 00),
+                LocalDateTime.of(2022, 10, 10, 13, 30), professor2);
+
         Presentation presentation4 = new PresentationImpl("Pres4",
-                LocalDateTime.of(2022, 10, 10, 10, 20),
-                LocalDateTime.of(2022, 10, 10, 12, 40), professor2);
+                LocalDateTime.of(2022, 10, 10, 15, 10),
+                LocalDateTime.of(2022, 10, 10, 15, 30), professor2);
 
-        Session session1 = new SessionImpl("Session1", theme1,
-                LocalDateTime.of(2022, 10, 10, 9, 00),
-                LocalDateTime.of(2022, 10, 10, 10, 00), r1);
 
-        Session session2 = new SessionImpl("Session2", theme1,
+        Session session2 = new SessionImpl("Session1", theme1,
+                LocalDateTime.of(2022, 10, 10, 11, 00),
+                LocalDateTime.of(2022, 10, 10, 14, 00), r1);
+
+        Session session1 = new SessionImpl("Session2", theme1,
                 LocalDateTime.of(2022, 10, 10, 15, 00),
                 LocalDateTime.of(2022, 10, 10, 16, 00), r2);
 
-        Session session3 = new SessionImpl("Session3", theme1,
-                LocalDateTime.of(2022, 10, 10, 12, 00),
-                LocalDateTime.of(2022, 10, 10, 13, 00), r3);
 
 
-        /*try {
+        try {
+            System.out.println(session1.addPresentation(presentation1));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
             System.out.println(session1.addPresentation(presentation2));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         try {
-            System.out.println(session2.addPresentation(presentation3));
+            System.out.println(session1.addPresentation(presentation3));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         try {
-            System.out.println(session3.addPresentation(presentation1));
+            System.out.println(session2.addPresentation(presentation4));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        try {
-            System.out.println(session3.addPresentation(presentation3));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            System.out.println(session3.addPresentation(presentation4));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }*/
 
         Conference conference1 = new ConferenceImpl("Conference1", LocalDateTime.now(),
                 "Cybersecurity");
@@ -117,12 +111,6 @@ public class TestAtoZ {
         System.out.println("2  -----------------------");
         try {
             System.out.println(((ConferenceImpl)conference1).addSession(session2));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        System.out.println("3 -----------------------");
-        try {
-            System.out.println(((ConferenceImpl)conference1).addSession(session3));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

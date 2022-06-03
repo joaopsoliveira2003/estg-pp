@@ -156,7 +156,6 @@ public class ConferenceImpl implements Conference, Exporter {
         // ver se a sala esta ocupada, considerando startTime e duration
         for ( Session session : this.getSessions() ) {
             if (session.getStartTime().plusMinutes(session.getDuration()).isAfter(sn.getStartTime())) {
-                System.out.println(session.getName());
                 if (session.getRoom().equals(sn.getRoom())) {
                     throw new ConferenceException("The room is already occupied.");
                 }
@@ -524,23 +523,44 @@ public class ConferenceImpl implements Conference, Exporter {
 
     @Override
     public String getSchedule() {
-        String str = "";
+        String str = this.getName() + " " + this.getYear() + "\n";
 
         Session[] tmpSessions = this.getSessions();
-        for (int a=1; a<tmpSessions.length; a++) {
-            for(int b=0; b<tmpSessions.length - a; b++) {
-                if (((tmpSessions[b].getStartTime()).isAfter((tmpSessions[b+1].getStartTime()))))
+        for ( int a = 1; a < tmpSessions.length; a++ ) {
+            for( int b = 0; b < tmpSessions.length - a; b++ ) {
+                if ( ((tmpSessions[b].getStartTime()).isAfter((tmpSessions[b+1].getStartTime()))) )
                 {
                     Session temp = tmpSessions[b];
-                    tmpSessions[b] = tmpSessions[b+1];
-                    tmpSessions[b+1] = temp;
+                    tmpSessions[b] = tmpSessions[b + 1];
+                    tmpSessions[b +1 ] = temp;
                 }
             }
         }
 
         for ( Session s : tmpSessions ) {
             if ( s == null ) break;
-            str += s.getStartTime() + " " + s.getRoom().getName() + "\n";
+            str += "\n" + s.getName() + " /" + s.getSessionTheme() + "\\ at " + s.getRoom().getName() +
+                "\n" + s.getStartTime() + " - " + ((SessionImpl)s).getEndTime() +
+                    "\nPresentations:\n";
+
+            Presentation[] tmpPresentations = s.getPresentations();
+            for ( int a = 1; a < tmpPresentations.length; a++ ) {
+                for( int b = 0; b < tmpPresentations.length - a; b++ ) {
+                    if ( ( ( ((PresentationImpl)tmpPresentations[b]).getStartTime()).isAfter( ((PresentationImpl)tmpPresentations[b+1]).getStartTime()) ) )
+                    {
+                        Presentation temp = tmpPresentations[b];
+                        tmpPresentations[b] = tmpPresentations[b + 1];
+                        tmpPresentations[b + 1] = temp;
+                    }
+                }
+            }
+
+            for ( Presentation p : tmpPresentations ) {
+                if ( p == null ) break;
+                str += "  " + p.getTitle() + " Presenter: " + p.getPresenter().getName() + "\n\t" +
+                ((PresentationImpl)p).getStartTime().getHour() + ":" + ((PresentationImpl)p).getStartTime().getMinute()
+                 + " - " + ((PresentationImpl)p).getEndTime().getHour() + ":" + ((PresentationImpl)p).getEndTime().getMinute() + "\n";
+            }
         }
 
         return str;
