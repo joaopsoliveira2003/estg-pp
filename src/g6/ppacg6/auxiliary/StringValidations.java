@@ -21,8 +21,11 @@ public class StringValidations {
      * @return true if the string is valid, false otherwise
      */
     public static boolean isValidString(String string) throws StringIndexOutOfBoundsException, NullPointerException {
-        if ( string == null ) throw new NullPointerException();
-        if ( string.length() > 49 || string.isBlank() || string.isEmpty() ) throw new StringIndexOutOfBoundsException();
+        if ( string == null ) throw new NullPointerException("String can't be null.");
+        if (  string.isBlank() || string.isEmpty() ) throw new NullPointerException(
+                "String can't be empty or blank.");
+        if ( string.length() >= 50 ) throw new
+                StringIndexOutOfBoundsException("String is not allowed to have more than 50 characters.");
         return true;
     }
     
@@ -35,8 +38,10 @@ public class StringValidations {
      * @return true if the string is valid, false otherwise
      */
     public static boolean isValidString(String string, int limitCharacters) throws StringIndexOutOfBoundsException, NullPointerException {
-        if ( string == null ) throw new NullPointerException();
-        if ( string.length() >= limitCharacters || string.isBlank() || string.isEmpty() ) throw new StringIndexOutOfBoundsException();
+        if ( string == null ) throw new NullPointerException("String can't be null.");
+        if ( string.isBlank() || string.isEmpty() ) throw new NullPointerException("String can't be empty or blank.");
+        if ( string.length() >= limitCharacters ) throw new
+                StringIndexOutOfBoundsException("String is not allowed to have more than " + limitCharacters + " characters.");
         return true;
     }
 }

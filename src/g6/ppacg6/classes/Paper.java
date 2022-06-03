@@ -10,6 +10,8 @@
 
 package g6.ppacg6.classes;
 
+import g6.ppacg6.auxiliary.StringValidations;
+
 /** Class responsible for the paper of the professor */
 public class Paper {
 
@@ -25,7 +27,7 @@ public class Paper {
     /** The paper's ID */
     private int id = 0;
 
-    /** The class's ID */
+    /** The class's ID Counter */
     private static int CID = 0;
 
     /**
@@ -59,11 +61,16 @@ public class Paper {
     }
 
     /**
-     * Sets the title of the paper
+     * Sets the title of the paper,
+     * uses the Util Class StringValidations to make String related validations
      * @param title String
      */
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String title) throws Exception {
+        try {
+            if (StringValidations.isValidString(title, 250)) this.title = title;
+        } catch (StringIndexOutOfBoundsException | NullPointerException e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
     /**
@@ -105,22 +112,23 @@ public class Paper {
      */
     @Override
     public boolean equals(Object obj) {
+
         if (this == obj) return true;
+
         if (obj == null) return false;
+
         if (getClass() != obj.getClass()) return false;
+
         final Paper other = (Paper) obj;
+
         if (this.id == other.id) return true;
+
         return ( this.title.equals(other.title) );
     }
 
-    /**
-     * Lists all the properties of the paper
-     * @return String
-     */
     @Override
     public String toString() {
-        return String.format("Paper={id=%o, title=%s, theme=%s, topic=%s}", id, title, theme, topic);
+        return "Paper{" + "title='" + title + '\'' + ", theme=" + theme + ", topic=" + topic + ", id=" + id + '}';
     }
-
 }
 

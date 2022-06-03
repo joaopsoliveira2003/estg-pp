@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 
 
 public class SessionImpl implements Session {
-
+    // TODO - triple check the class
     private int id = 0;
     private static int CID = 0;
     

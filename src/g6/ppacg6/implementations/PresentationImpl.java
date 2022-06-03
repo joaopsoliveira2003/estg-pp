@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 
         
 public class PresentationImpl implements Presentation {
+    // TODO - triple check the class
     private int id = 0;
     private static int CID = 0;
 

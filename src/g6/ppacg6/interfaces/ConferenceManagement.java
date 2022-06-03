@@ -6,7 +6,7 @@ import g6.ppacg6.implementations.ConferenceImpl;
 
 /** Interface responsible for extending the exporter interface and for the management of the conferences*/
 public interface ConferenceManagement {
-
+    // TODO - remove?
     /**
      * Method responsible for adding a new conference
      * @param conference the conference to be added

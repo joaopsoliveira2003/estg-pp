@@ -10,8 +10,10 @@
 
 package g6.ppacg6.classes;
 
-public class Theme {
+import g6.ppacg6.auxiliary.StringValidations;
 
+public class Theme {
+    // TODO - create custom exception and double check the class
     private int id = 0;
     private static int CID = 0;
     
@@ -45,8 +47,12 @@ public class Theme {
      * Set the theme
      * @param theme - String
      */
-    public void setTheme(String theme) {
-        this.theme = theme;
+    public void setTheme(String theme) throws Exception {
+        try {
+            if (StringValidations.isValidString(theme, 250) ) this.theme = theme;
+        } catch (StringIndexOutOfBoundsException | NullPointerException e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
     /**

@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 /** Class responsible for managing conferences */
 public class ConferenceManagementImpl implements ConferenceManagement {
-
+    // TODO - wtf do we do with this?
     /** Number of conferences */
     private int nConferences;
 

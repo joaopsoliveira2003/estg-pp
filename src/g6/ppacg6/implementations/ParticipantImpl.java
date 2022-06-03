@@ -1,10 +1,12 @@
 package g6.ppacg6.implementations;
 
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.Participant;
+import g6.ppacg6.auxiliary.StringValidations;
 import g6.ppacg6.enumerations.ParticipantTypeEnum;
 
 public abstract class ParticipantImpl implements Participant {
-
+    // TODO - check the class
     private int id;
     private static int CID = 0;
 
@@ -38,8 +40,26 @@ public abstract class ParticipantImpl implements Participant {
         return this.participantType;
     }
 
-    //sets
+    public void setName(String name) throws ParticipantException {
+        try {
+            if (StringValidations.isValidString(name, 100) ) this.name = name;
+        } catch (StringIndexOutOfBoundsException | NullPointerException e) {
+            throw new ParticipantException(e.getMessage());
+        }
+    }
 
+    public void setBio(String bio) throws ParticipantException {
+        try {
+            if (StringValidations.isValidString(name, 100) ) this.bio = bio;
+        } catch (StringIndexOutOfBoundsException | NullPointerException e) {
+            throw new ParticipantException(e.getMessage());
+        }
+    }
+
+    public void setParticipantType(ParticipantTypeEnum participantType) throws ParticipantException {
+        if ( participantType == null ) throw new ParticipantException("Participant Type cannot be null");
+        this.participantType = participantType;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -51,7 +71,7 @@ public abstract class ParticipantImpl implements Participant {
 
         final ParticipantImpl other = (ParticipantImpl) obj;
 
-        return (this.id == other.getId());
+        return ( this.id == other.getId() );
     }
 
 

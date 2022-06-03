@@ -18,7 +18,7 @@ import g6.ppacg6.classes.Equipment;
 import g6.ppacg6.exceptions.EquipmentException;
 
 public class RoomImpl implements Room {
-
+    // TODO - check the class
     private int id = 0;
     private static int CID = 0;
 

@@ -2,6 +2,7 @@ package g6.ppacg6.main;
 
 import estg.ipp.pt.tp02_conferencesystem.dashboards.Dashboard;
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
+import estg.ipp.pt.tp02_conferencesystem.exceptions.ConferenceException;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
 import estg.ipp.pt.tp02_conferencesystem.interfaces.*;
@@ -20,10 +21,18 @@ public class TestAtoZ {
         ParticipantImpl professor1 = new Professor("P1", "Bio", ParticipantTypeEnum.SPEAKER,
                 DegreeEnum.DOUTORAMENTO, FieldEnum.COMPUTER_SCIENCE);
         ParticipantImpl professor2 = new Professor("P2", "Bio",
-                ParticipantTypeEnum.SPEAKER,
+                ParticipantTypeEnum.VISITOR,
                 DegreeEnum.LICENCIATURA, FieldEnum.COMPUTER_SCIENCE);
-        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.SPEAKER,
+        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.VISITOR,
                 CourseEnum.LSIRC, 1);
+        ParticipantImpl student2 = new Student("S2", "Bio", ParticipantTypeEnum.VISITOR,
+                CourseEnum.LSIRC, 2);
+        ParticipantImpl student3 = new Student("S3", "Bio", ParticipantTypeEnum.VISITOR,
+                CourseEnum.LSIRC, 3);
+        ParticipantImpl student4 = new Student("S4", "Bio", ParticipantTypeEnum.VISITOR,
+                CourseEnum.LSIRC, 4);
+        ParticipantImpl student5 = new Student("S5", "Bio", ParticipantTypeEnum.VISITOR,
+                CourseEnum.LSIRC, 5  );
 
         Theme theme1 = new Theme("Cybersecurity");
         Theme theme2 = new Theme("Cybersecuriy");
@@ -49,6 +58,8 @@ public class TestAtoZ {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
         Presentation presentation1 = new PresentationImpl("Pres1",
                 LocalDateTime.of(2022, 10, 10, 12, 00),
@@ -98,9 +109,9 @@ public class TestAtoZ {
             System.out.println(e.getMessage());
         }
 
-        Conference conference1 = new ConferenceImpl("Conference1", LocalDateTime.now(),
-                "Cybersecurity");
-
+        Conference conference1 = new ConferenceImpl("Conference1",
+                    LocalDateTime.of(2023, 10, 10, 10, 00),
+                    "Cybersecurity");
 
         System.out.println("1  -----------------------");
         try {
@@ -131,8 +142,32 @@ public class TestAtoZ {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        try {
+            conference1.checkIn(student2);
+            conference1.checkIn(student3);
+            conference1.checkIn(student4);
+            conference1.checkIn(student5);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         System.out.println("-------------------------");
-        System.out.println(conference1.getSchedule());
+
+        for ( Participant p : conference1.getParticipants() ) {
+            System.out.println(p);
+        }
+        for ( Participant p : session1.getAllPresenters() ) {
+            System.out.println(p);
+        }
+        /*System.out.println(conference1.getSchedule());
+
+        ((ConferenceImpl)conference1).changeStateManual(ConferenceState.FINISHED);
+        System.out.println("-------------------------");
+        try {
+            conference1.generateSpeakerCertificates("sp");
+            conference1.generateParticipantCertificates("pc");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }*/
     }
 }

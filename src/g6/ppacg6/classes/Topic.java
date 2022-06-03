@@ -11,7 +11,7 @@
 package g6.ppacg6.classes;
 
 public class Topic {
-    
+    // TODO - create custom exception and double check the class
     private String topic;
     private int id = 0;
     private static int CID = 0;

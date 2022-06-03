@@ -11,6 +11,7 @@
 package g6.ppacg6.classes;
 
 import g6.ppacg6.enumerations.EquipmentEnum;
+import g6.ppacg6.exceptions.EquipmentException;
 
 /**
  * Class responsible for the equipments of the rooms
@@ -29,9 +30,8 @@ public class Equipment {
 
     /**
      * Constructor for the Equipment
-     * @param id ID of the Equipment
+     * @param id ID of the Equipment, might not be unique
      * @param equipment enumeration of the type of the Equipment
-     * <br><b>hasProblems</b> is set to false by default
      */
     public Equipment(int id, EquipmentEnum equipment) {
         this.id = id;
@@ -50,7 +50,10 @@ public class Equipment {
      * Sets the ID of the Equipment
      * @param id the id
      */
-    public void setId(int id) {
+    public void setId(int id) throws EquipmentException {
+        if (id < 0) {
+            throw new EquipmentException("ID must be positive");
+        }
         this.id = id;
     }
 
@@ -66,7 +69,10 @@ public class Equipment {
      * Sets the type of the Equipment
      * @param equipment EquipmentEnum
      */
-    public void setEquipment(EquipmentEnum equipment) {
+    public void setEquipment(EquipmentEnum equipment) throws EquipmentException {
+        if (equipment == null) {
+            throw new EquipmentException("Equipment must be defined");
+        }
         this.equipment = equipment;
     }
 
@@ -87,16 +93,11 @@ public class Equipment {
 
         if (this.id == other.id) return true;
 
-        return this.equipment == other.equipment;
+        return this.equipment.equals(other.equipment);
     }
 
-    /**
-     * Lists all the properties of the Equipment
-     * @return String
-     */
     @Override
     public String toString() {
-        return String.format("Equipment{id=%o, equipment=%s}", id, equipment);
+        return "Equipment{" + "id=" + id + ", equipment=" + equipment + '}';
     }
-    
 }

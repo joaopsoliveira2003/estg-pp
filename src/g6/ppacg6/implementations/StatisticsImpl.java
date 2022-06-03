@@ -3,7 +3,7 @@ package g6.ppacg6.implementations;
 import estg.ipp.pt.tp02_conferencesystem.io.interfaces.Statistics;
 
 public class StatisticsImpl implements Statistics {
-
+    // TODO - check the class
     private String description;
     private double value;
 

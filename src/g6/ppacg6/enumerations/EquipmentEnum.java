@@ -26,4 +26,5 @@ public enum EquipmentEnum {
             case LASER_POINTER -> "Laser Pointer";
         };
     }
+
 }

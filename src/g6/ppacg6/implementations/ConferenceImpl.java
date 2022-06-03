@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalUnit;
 
 public class ConferenceImpl implements Conference, Exporter {
-    
+    // TODO - triple check the class
     private String name;
     private LocalDateTime year;
     
@@ -98,7 +98,7 @@ public class ConferenceImpl implements Conference, Exporter {
 
     @Override
     public int getYear() {
-        //The year should be greater or equal than the current year
+        if (this.year.getYear() > LocalDateTime.now().getYear()) return LocalDateTime.now().getYear();
         return this.year.getYear();
     }
 
@@ -318,14 +318,15 @@ public class ConferenceImpl implements Conference, Exporter {
 
         this.participants[nParticipants++] = p;
 
-        /* Add the Participant to all Sessions in the Conference
+        // Add the Participant to all Sessions in the Conference
         try {
             for (int x = 0; x < nSessions; x++) {
                 ((SessionImpl) this.sessions[x]).addParticipant(p);
             }
         } catch (SessionException ex) {
-            throw new ConferenceException(ex.getMessage());
-        }*/
+            //do nothing
+            assert true;
+        }
     }
 
     @Override

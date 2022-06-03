@@ -29,6 +29,7 @@ import java.time.Month;
 public class PPACG6 {
 
     public static void main(String[] args) {
+        /*
         ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LSIRC, 1);
         ParticipantImpl student2 = new Student("S2", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LEI, 2);
         ParticipantImpl student3 = new Student("S3", "Bio", ParticipantTypeEnum.SPEAKER, CourseEnum.LSIRC, 3);
@@ -200,7 +201,7 @@ public class PPACG6 {
         }
 
         System.out.println("------------- Remove Session ----------------");
-        /*
+
         try {
             conference1.removeSession(2);
         } catch (Exception ex) {
@@ -215,14 +216,12 @@ public class PPACG6 {
             if (s == null) break;
             System.out.println(s.toString());
         }
-        */
-        /*
+
         System.out.println("------------- Get Number of Sessions by Room ----------------");
         for (Statistics s : conference1.getNumberOfSessionsByRoom()) {
             System.out.println(s.getDescription() + " " + s.getValue());
         }
-        */
-        /*
+
         System.out.println("------------- Get Number of Participants by Session ----------------");
         for (Statistics s : conference1.getNumberOfParticipantsBySession()) {
             System.out.println(s.getDescription() + " " + s.getValue());
@@ -247,7 +246,7 @@ public class PPACG6 {
         } catch ( Exception e) {
             System.out.println(e.getMessage());
         }
-        */
+
         System.out.println("------------- Export File ----------------");
         conference1.changeState();
         try {
@@ -258,7 +257,7 @@ public class PPACG6 {
         }
 
 
-        /*
+
         System.out.println("------------- Test ----------------");
         //System.out.println(JsonGenerator.generateOutlabeledPie(new String[]{"asd", "dsa"}, new String[]{"1", "2"}));
         try {
@@ -301,8 +300,9 @@ public class PPACG6 {
 
 
         Dashboard.render(jsonFiles);
-        */
+
 
         System.out.println(conference1.getSchedule());
+        */
     }
 }

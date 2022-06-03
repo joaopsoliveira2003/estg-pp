@@ -17,6 +17,8 @@ import g6.ppacg6.enumerations.ParticipantTypeEnum;
 import g6.ppacg6.exceptions.PaperException;
 import g6.ppacg6.implementations.ParticipantImpl;
 
+
+
 /** Class responsible for the professor */
 public class Professor extends ParticipantImpl {
 
@@ -64,11 +66,11 @@ public class Professor extends ParticipantImpl {
      * @param index index of the paper
      * @return the Paper
      */
-    public Paper getPaper(int index) throws ArrayIndexOutOfBoundsException, ParticipantException {
+    public Paper getPaper(int index) throws ParticipantException {
         try {
             if (this.papers[index] == null) throw new NullPointerException();
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("The index is out of bounds.");
+            throw new ParticipantException("The index is out of bounds.");
         } catch (NullPointerException e) {
             throw new ParticipantException("Couldn't find the Paper");
         }
@@ -91,7 +93,7 @@ public class Professor extends ParticipantImpl {
         try {
             if ( degree == null ) throw new NullPointerException();
         } catch (NullPointerException ex) {
-            throw new ParticipantException("The Course can't be null");
+            throw new ParticipantException("The Course can't be null.");
         }
         this.degree = degree;
     }
@@ -112,7 +114,7 @@ public class Professor extends ParticipantImpl {
         try {
             if ( expertIn == null ) throw new NullPointerException();
         } catch (NullPointerException ex) {
-            throw new ParticipantException("The expertIn can't be null");
+            throw new ParticipantException("The expertIn Field can't be null.");
         }
         this.expertIn = expertIn;
     }
@@ -122,7 +124,8 @@ public class Professor extends ParticipantImpl {
      * @return String
      */
     public String listPapers() {
-        if (nPapers == 0) return "There are no papers";
+        if ( nPapers == 0 ) return "The Professor has no Papers";
+
         String str = "";
         for (Paper paper : this.papers) {
             if (paper == null) break;
@@ -158,7 +161,7 @@ public class Professor extends ParticipantImpl {
         
         int pos = findPaper(paper);
         
-        if (nPapers == papers.length) return false;
+        if ( nPapers == papers.length ) return false;
         
         if (pos != -1) return false;
         
@@ -192,14 +195,15 @@ public class Professor extends ParticipantImpl {
      * @return boolean
      * @throws NullPointerException if the given paper is null
      */
-    public boolean delPaper(Paper paper) throws NullPointerException {
-        if (nPapers == 0) return false;
+    public boolean delPaper(Paper paper) throws ParticipantException {
+        if ( nPapers == 0 ) return false;
         
-        if (paper == null) throw new NullPointerException("The topic to add can't be null.");
+        if ( paper == null ) throw new
+                ParticipantException("The topic to add can't be null.");
         
         int pos = findPaper(paper);
         
-        if (pos == -1) return false;
+        if ( pos == -1 ) throw new ParticipantException("The paper to remove doesn't exist.");
         
         for ( int x = pos; x < nPapers - 1; x++) {
             papers[x] = papers[x + 1];
@@ -239,17 +243,19 @@ public class Professor extends ParticipantImpl {
     @Override
     public boolean equals(Object obj) {
         if ( super.equals(obj) ) return true;
+
         if ( obj.getClass() != this.getClass() ) return false;
+
         final Professor other = (Professor) obj;
-        return ( this.nPapers == other.nPapers && this.degree.equals(other.getDegree() ) && this.expertIn.equals(other.getExpertIn()) );
+
+        return ( this.nPapers == other.nPapers &&
+                this.degree.equals(other.getDegree() ) &&
+                this.expertIn.equals(other.getExpertIn()) );
     }
 
-    /**
-     * Gets the properties of the professor
-     * @return string
-     */
     @Override
     public String toString() {
-        return String.format("%sProfessor{papers=[%s], nPapers=%d, degree=%s, expertIn=%s}", super.toString(), listPapers(), nPapers, degree, expertIn);
+        return super.toString() + "Professor{" + "nPapers=" + nPapers + ", papers=[" + listPapers() + "], " +
+                "degree=" + degree + ", expertIn=" + expertIn + '}';
     }
 }

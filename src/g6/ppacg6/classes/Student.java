@@ -50,7 +50,6 @@ public class Student extends ParticipantImpl {
      * @param course - CourseEnum
      */
     public void setCourse(CourseEnum course) throws ParticipantException {
-        // Mais validacoes?
         try {
             if ( course == null ) throw new ParticipantException();
         } catch (ParticipantException e) {
@@ -85,12 +84,8 @@ public class Student extends ParticipantImpl {
                 && this.courseYear == other.getCourseYear() );
     }
 
-
     @Override
     public String toString() {
-        return super.toString() + "Student{" +
-                "course=" + course +
-                ", courseYear=" + courseYear +
-                '}';
+        return super.toString() + "Student{" + "course=" + course + ", courseYear=" + courseYear + '}';
     }
 }
