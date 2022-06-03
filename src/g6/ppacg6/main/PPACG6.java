@@ -302,5 +302,7 @@ public class PPACG6 {
 
         Dashboard.render(jsonFiles);
         */
+
+        System.out.println(conference1.getSchedule());
     }
 }

@@ -166,6 +166,7 @@ public class ConferenceImpl implements Conference, Exporter {
         for ( Session session : this.getSessions() ) {
             if (session.getStartTime().plusMinutes(session.getDuration()).isAfter(sn.getStartTime())) {
                 for (Participant p : session.getAllPresenters()) {
+                    if (p == null) break;
                     for (Participant pSn : sn.getAllPresenters()) {
                         if (p.equals(pSn)) {
                             throw new ConferenceException("The presenter is already in another session.");
@@ -178,6 +179,7 @@ public class ConferenceImpl implements Conference, Exporter {
         // se uma apresentacao de esta sessao esta noutras sessoes
         for ( Session session : this.getSessions() ) {
             for (Presentation p : session.getPresentations()) {
+                if (p == null) break;
                 for (Presentation pSn : sn.getPresentations()) {
                     if (p.equals(pSn)) {
                         throw new ConferenceException("The Presentation is already in another Session.");
@@ -203,7 +205,7 @@ public class ConferenceImpl implements Conference, Exporter {
                 }
             }
         } catch (ConferenceException ex) {
-            throw new ConferenceException("Couldn't add the session, already exists or is not valid");
+            throw new ConferenceException(ex.getMessage());
         }
         return x;
     }
@@ -317,27 +319,30 @@ public class ConferenceImpl implements Conference, Exporter {
 
         this.participants[nParticipants++] = p;
 
-        // Add the Participant to all Sessions in the Conference
+        /* Add the Participant to all Sessions in the Conference
         try {
             for (int x = 0; x < nSessions; x++) {
                 ((SessionImpl) this.sessions[x]).addParticipant(p);
             }
         } catch (SessionException ex) {
             throw new ConferenceException(ex.getMessage());
-        }
+        }*/
     }
 
     @Override
     public Participant getParticipant(int i) throws ConferenceException {
-        // POR ID
         if (nParticipants == 0) throw new ConferenceException("There are no Participants checked-in");
         
         try {
-            if ( this.participants[i] == null ) throw new ArrayIndexOutOfBoundsException();
+            for ( int p = 0; p < nParticipants; p++ ) {
+                if ( this.participants[p].getId() == i ) {
+                    return this.participants[p];
+                }
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ConferenceException("Couldn't find the Participant in the Conference");
         }
-        return this.participants[i];
+        return null;
     }
 
     @Override
@@ -437,43 +442,53 @@ public class ConferenceImpl implements Conference, Exporter {
         return rooms;
     }
 
-    //file path
     @Override
     public void generateSpeakerCertificates(String string) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished.");
 
-        // GERAR EM JSON, nome, nomeCOnferencia, ano, titulo apresentacao, data
-        // string e nome da pasta
-        // erros se nao der para gerar o ficheiro
-        // nome ficheiro: idParticipant + idPresentation
+        try {
+            if (string == null || string.equals("")) throw new
+                    ConferenceException("The file path can't be null or empty.");
+        } catch (ConferenceException e) {
+            throw new ConferenceException(e.getMessage());
+        }
 
-        // iterar sobre todos os participantes da CONFERENCIA e ver quais sao speaker
-        // para cada speaker gerar um certificado
-        Participant[] speakers = this.getSpeakerParticipants();
-
-        File directory = new File("conferenceCertificates/");
+        File directory = new File(string);
         if (!directory.exists()) {
             directory.mkdir();
         }
 
-        for ( int x = 0; x < speakers.length; x++ ) {
-            String presentationsID = "";
-            for ( int p = 0; p < nSessions; p++ ) {
-                try {
-                    if (sessions[p].getPresentation(p) == null) break;
-                    if ( sessions[p].getPresentation(p).getPresenter().equals(speakers[x]) ) {
-                        presentationsID = "_" + sessions[p].getPresentation(p).getId();
-                        break;
+        for ( Participant p : this.participants ) {
+            if ( p == null ) break;
+            if ( ((ParticipantImpl)p).getParticipantType().equals(ParticipantTypeEnum.SPEAKER) ) {
+                JSONObject json = new JSONObject();
+
+                json.put("name", p.getName());
+                json.put("conference", this.getName());
+                json.put("year", this.getYear());
+
+                for ( Session s : this.sessions ) {
+                    if ( s == null ) break;
+                    for ( Presentation pS : s.getPresentations() ) {
+                        if ( pS == null ) break;
+                        if ( pS.getPresenter().equals(p) ) {
+                            JSONObject presentation = new JSONObject();
+                            presentation.put("title", pS.getTitle());
+                            String date = String.valueOf(s.getStartTime());
+                            presentation.put("date", date);
+                            json.put("presentation", presentation);
+
+                            try {
+                                String filename = string + "/" + p.getName() + pS.getId() + ".json";
+                                FileWriter file = new FileWriter(filename);
+                                file.write(json.toJSONString());
+                                file.close();
+                            } catch (IOException e) {
+                                throw new ConferenceException(e.getMessage());
+                            }
+                        }
                     }
-                } catch (SessionException e) {
-                    throw new ConferenceException(e.getMessage());
                 }
-            }
-            try {
-                FileWriter file = new FileWriter("conferenceCertificates/ID"
-                        + speakers[x].getId() + "_PresentationsID" + presentationsID + ".json");
-            } catch (Exception e) {
-                throw new ConferenceException(e.getMessage());
             }
         }
     }
@@ -482,26 +497,53 @@ public class ConferenceImpl implements Conference, Exporter {
     public void generateParticipantCertificates(String string) throws ConferenceException {
         if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished.");
 
-        // GERAR EM JSON, nome, nomeConferencia, ano
-        // string e nome da pasta
-        // erros se nao der para gerar o ficheiro
-        // nome ficheiro: idParticipant
+        try {
+            if (string == null || string.equals("")) throw new
+                    ConferenceException("The file path can't be null or empty.");
+        } catch (ConferenceException e) {
+            throw new ConferenceException(e.getMessage());
+        }
 
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        File directory = new File(string);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
 
-    //TODO: tirar string builder
-    @Override
-    public String getSchedule() {
-        // ordenar e nao usar stringBuilder
-        StringBuilder sb = new StringBuilder();
-        for (Session session : this.sessions) {
-            if (session != null) {
-                sb.append(session.getName()).append(":\n\tStart: ").append(session.getStartTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))).append("\n\tEnd: ").append(((SessionImpl) session).getEndTime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))).append("\n\tRoom: ").append(session.getRoom().getName()).append("\n");
+        for ( Participant p : this.participants ) {
+            if ( p == null ) break;
+            try {
+                FileWriter file = new FileWriter(string + "/" + p.getId() + ".txt");
+                file.write("We certify that the participant " + p.getName() + " is a participant of the conference " + this.getName() + " in the year " + this.getYear() + ".");
+                file.close();
+            } catch (IOException e) {
+                throw new ConferenceException(e.getMessage());
             }
         }
-        sb.append("\n");
-        return sb.toString();
+    }
+
+
+    @Override
+    public String getSchedule() {
+        String str = "";
+
+        Session[] tmpSessions = this.getSessions();
+        for (int a=1; a<tmpSessions.length; a++) {
+            for(int b=0; b<tmpSessions.length - a; b++) {
+                if (((tmpSessions[b].getStartTime()).isAfter((tmpSessions[b+1].getStartTime()))))
+                {
+                    Session temp = tmpSessions[b];
+                    tmpSessions[b] = tmpSessions[b+1];
+                    tmpSessions[b+1] = temp;
+                }
+            }
+        }
+
+        for ( Session s : tmpSessions ) {
+            if ( s == null ) break;
+            str += s.getStartTime() + " " + s.getRoom().getName() + "\n";
+        }
+
+        return str;
     }
 
     @Override
@@ -583,7 +625,6 @@ public class ConferenceImpl implements Conference, Exporter {
      * @return the JSON string
      */
     public String generateNumberOfSessionsByRoom(Statistics[] statistics) throws ConferenceException {
-
         if (! (this.conferenceState.equals(ConferenceState.FINISHED)) ) throw new ConferenceException("The Conference is not finished");
 
         JSONObject json = new JSONObject();

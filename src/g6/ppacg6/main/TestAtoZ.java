@@ -1,5 +1,6 @@
 package g6.ppacg6.main;
 
+import estg.ipp.pt.tp02_conferencesystem.dashboards.Dashboard;
 import estg.ipp.pt.tp02_conferencesystem.enumerations.ConferenceState;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.ParticipantException;
 import estg.ipp.pt.tp02_conferencesystem.exceptions.SessionException;
@@ -8,6 +9,8 @@ import g6.ppacg6.classes.*;
 import g6.ppacg6.enumerations.*;
 import g6.ppacg6.implementations.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.time.LocalDateTime;
 
 public class TestAtoZ {
@@ -19,7 +22,7 @@ public class TestAtoZ {
         ParticipantImpl professor2 = new Professor("P2", "Bio",
                 ParticipantTypeEnum.SPEAKER,
                 DegreeEnum.LICENCIATURA, FieldEnum.COMPUTER_SCIENCE);
-        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.VISITOR,
+        ParticipantImpl student1 = new Student("S1", "Bio", ParticipantTypeEnum.SPEAKER,
                 CourseEnum.LSIRC, 1);
 
         Theme theme1 = new Theme("Cybersecurity");
@@ -49,43 +52,60 @@ public class TestAtoZ {
 
         Presentation presentation1 = new PresentationImpl("Pres1",
                 LocalDateTime.of(2022, 10, 10, 10, 00),
-                LocalDateTime.of(2022, 10, 10, 10, 10), professor1);
+                LocalDateTime.of(2022, 10, 10, 10, 30), professor1);
 
         Presentation presentation2 = new PresentationImpl("Pres2",
+                LocalDateTime.of(2022, 10, 10, 10, 10),
+                LocalDateTime.of(2022, 10, 10, 10, 30), student1);
+
+        Presentation presentation3 = new PresentationImpl("Pres3",
+                LocalDateTime.of(2022, 10, 10, 12, 10),
+                LocalDateTime.of(2022, 10, 10, 12, 30), student1);
+        Presentation presentation4 = new PresentationImpl("Pres4",
                 LocalDateTime.of(2022, 10, 10, 10, 20),
-                LocalDateTime.of(2022, 10, 10, 10, 30), professor2);
+                LocalDateTime.of(2022, 10, 10, 12, 40), professor2);
 
         Session session1 = new SessionImpl("Session1", theme1,
-                LocalDateTime.of(2022, 10, 10, 10, 00),
-                LocalDateTime.of(2022, 10, 10, 11, 00), r1);
+                LocalDateTime.of(2022, 10, 10, 9, 00),
+                LocalDateTime.of(2022, 10, 10, 10, 00), r1);
 
         Session session2 = new SessionImpl("Session2", theme1,
-                LocalDateTime.of(2022, 10, 10, 11, 15),
-                LocalDateTime.of(2022, 10, 10, 11, 30), r1);
+                LocalDateTime.of(2022, 10, 10, 15, 00),
+                LocalDateTime.of(2022, 10, 10, 16, 00), r2);
 
         Session session3 = new SessionImpl("Session3", theme1,
                 LocalDateTime.of(2022, 10, 10, 12, 00),
-                LocalDateTime.of(2022, 10, 10, 12, 20), r2);
+                LocalDateTime.of(2022, 10, 10, 13, 00), r3);
 
 
-        try {
-            ((SessionImpl)session1).addPresentation(presentation1);
-            ((SessionImpl)session1).addPresentation(presentation2);
-            ((SessionImpl)session2).addPresentation(presentation2);
-            ((SessionImpl)session3).addPresentation(presentation2);
+        /*try {
+            System.out.println(session1.addPresentation(presentation2));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        try {
+            System.out.println(session2.addPresentation(presentation3));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            System.out.println(session3.addPresentation(presentation1));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            System.out.println(session3.addPresentation(presentation3));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            System.out.println(session3.addPresentation(presentation4));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }*/
 
         Conference conference1 = new ConferenceImpl("Conference1", LocalDateTime.now(),
                 "Cybersecurity");
-
-        //((ConferenceImpl)conference1).changeStateManual(ConferenceState.FINISHED);
-
-
-        for ( Participant p : session1.getAllPresenters()) {
-            System.out.println(p.toString());
-        }
 
 
         System.out.println("1  -----------------------");
@@ -106,5 +126,25 @@ public class TestAtoZ {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
+        ((ConferenceImpl)conference1).changeStateManual(ConferenceState.IN_PROGRESS);
+        try {
+            conference1.checkIn(professor1);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            conference1.checkIn(professor2);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            conference1.checkIn(student1);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("-------------------------");
+        System.out.println(conference1.getSchedule());
     }
 }

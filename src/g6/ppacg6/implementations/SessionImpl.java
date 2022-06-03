@@ -75,6 +75,7 @@ public class SessionImpl implements Session {
         Duration startTimeD = Duration.between(this.startTime, LocalDateTime.now());
         Duration endTimeD = Duration.between(this.endTime, LocalDateTime.now());
         return (int) (startTimeD.toMinutes() - endTimeD.toMinutes());
+        //return (int) this.endTime.getMinute() - this.startTime.getMinute();
     }
 
     @Override
@@ -156,9 +157,10 @@ public class SessionImpl implements Session {
             this.addParticipant(prsntn.getPresenter());
         } catch (SessionException e) {
             throw new SessionException(e.getMessage());
+        } finally {
+            presentations[nPresentations++] = prsntn;
         }
 
-        presentations[nPresentations++] = prsntn;
         return true;
     }
     

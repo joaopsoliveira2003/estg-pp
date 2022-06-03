@@ -96,7 +96,23 @@ public class PresentationImpl implements Presentation {
             throw new NullPointerException("The title can't be null");
         }
     }
-    
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     /**
      * Get the duration of the Presentation, in minutes
      * @return int
