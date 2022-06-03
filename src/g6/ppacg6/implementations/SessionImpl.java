@@ -202,9 +202,8 @@ public class SessionImpl implements Session {
     public boolean addPresentation(Presentation prsntn) throws SessionException {
         if ( prsntn == null ) throw new SessionException("Can't add a Presentation that is null");
 
-        if ( ((PresentationImpl)prsntn).getEndTime().isAfter(this.endTime) ) {
-            throw new SessionException("Can't add a Presentation that ends after the session");
-        }
+        if ( ((PresentationImpl)prsntn).getStartTime().isAfter(this.endTime) ) throw new
+                SessionException("Can't add a Presentation that is after the session's end time");
 
         if ( ((PresentationImpl)prsntn).getEndTime().isAfter(this.endTime) ) throw new
                 SessionException("The presentation is after the session's end time");
@@ -241,7 +240,7 @@ public class SessionImpl implements Session {
         try {
             this.addParticipant(prsntn.getPresenter());
         } catch (SessionException e) {
-            throw new SessionException(e.getMessage());
+            assert true;
         } finally {
             presentations[nPresentations++] = prsntn;
         }

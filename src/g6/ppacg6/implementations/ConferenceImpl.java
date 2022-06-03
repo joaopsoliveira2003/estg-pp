@@ -584,7 +584,7 @@ public class ConferenceImpl implements Conference, Exporter {
                             json.put("presentation", presentation);
 
                             try {
-                                String filename = string + "/" + p.getName() + pS.getId() + ".json";
+                                String filename = string + "/" + pS.getId() + ".json";
                                 FileWriter file = new FileWriter(filename);
                                 file.write(json.toJSONString());
                                 file.close();
@@ -623,7 +623,7 @@ public class ConferenceImpl implements Conference, Exporter {
             if ( p == null ) break;
             try {
                 FileWriter file = new FileWriter(string + "/" + p.getId() + ".txt");
-                file.write("We certify that the participant " + p.getName() + " is a participant of the conference " + this.getName() + " in the year " + this.getYear() + ".");
+                file.write("We certify that " + p.getName() + " is a participant of the conference " + this.getName() + " in the year " + this.getYear() + ".");
                 file.close();
             } catch (IOException e) {
                 throw new ConferenceException(e.getMessage());
@@ -709,10 +709,6 @@ public class ConferenceImpl implements Conference, Exporter {
 
         Statistics[] tempStatistics = new Statistics[nRooms];
         int[] sessionsByRoom = new int[nRooms];
-
-        for ( int x = 0; x < nRooms; x++ ) {
-            sessionsByRoom[x] = 0;
-        }
 
         for (int x = 0; x < nSessions; x++) {
             for (int y = 0; y < nRooms; y++) {

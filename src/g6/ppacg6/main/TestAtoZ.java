@@ -34,11 +34,7 @@ public class TestAtoZ {
         ParticipantImpl student5 = new Student("S5", "Bio", ParticipantTypeEnum.VISITOR,
                 CourseEnum.LSIRC, 5  );
 
-        try {
-            ((Student)student1).setCourseYear(-1);
-        } catch (ParticipantException e) {
-            System.out.println(e.getMessage());
-        }
+
         Theme theme1 = new Theme("Cybersecurity");
         Theme theme2 = new Theme("Cybersecuriy");
         Topic topic1 = new Topic("Malware");
@@ -118,13 +114,11 @@ public class TestAtoZ {
                     LocalDateTime.of(2023, 10, 10, 10, 00),
                     "Cybersecurity");
 
-        System.out.println("1  -----------------------");
         try {
             System.out.println(((ConferenceImpl)conference1).addSession(session1));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("2  -----------------------");
         try {
             System.out.println(((ConferenceImpl)conference1).addSession(session2));
         } catch (Exception e) {
@@ -156,14 +150,8 @@ public class TestAtoZ {
             System.out.println(e.getMessage());
         }
 
-        System.out.println("-------------------------");
 
-        for ( Participant p : conference1.getParticipants() ) {
-            System.out.println(p);
-        }
-        for ( Participant p : session1.getAllPresenters() ) {
-            System.out.println(p);
-        }
+        System.out.println("-------------------------");
         System.out.println(conference1.getSchedule());
         /*
         ((ConferenceImpl)conference1).changeStateManual(ConferenceState.FINISHED);
