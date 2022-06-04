@@ -7,30 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConferenceImplTest {
 
     @Test
-    void getName() {
-    }
-
-    @Test
-    void getField() {
-    }
-
-    @Test
-    void getState() {
-    }
-
-    @Test
-    void getnSessions() {
-    }
-
-    @Test
-    void changeState() {
-    }
-
-    @Test
-    void changeStateManual() {
-    }
-
-    @Test
     void getYear() {
     }
 
