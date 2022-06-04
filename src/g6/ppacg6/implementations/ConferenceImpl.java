@@ -512,7 +512,6 @@ public class ConferenceImpl implements Conference, Exporter {
     public Room[] getRooms() {
         Room[] tempRooms = new Room[this.nSessions];
         int nRooms = 0;
-        boolean found;
 
         for ( int x = 0; x < this.nSessions; x++ ) {
             if ( this.sessions[x].getRoom() == null ) break;
@@ -521,17 +520,19 @@ public class ConferenceImpl implements Conference, Exporter {
         }
 
         // Remove duplicates
-        for (int x = 1; x < tempRooms.length; x++) {
-            found = false;
-            for (int y = 0; y < nRooms; y++) {
-                if (tempRooms[x].equals(tempRooms[y])) {
-                    found = true;
-                    break;
+        for ( int x = 0; x < nRooms; x++ ) {
+            for ( int y = x + 1; y < nRooms; y++ ) {
+                if ( tempRooms[x].equals(tempRooms[y]) ) {
+                    tempRooms[y] = tempRooms[nRooms - 1];
+                    nRooms--;
+                    y--;
                 }
             }
-            if (!found) {
-                tempRooms[nRooms++] = tempRooms[x];
-            }
+        }
+
+        for ( Room r : tempRooms ) {
+            if ( r == null ) break;
+            System.out.println(r);
         }
 
         // Compress array
@@ -775,7 +776,7 @@ public class ConferenceImpl implements Conference, Exporter {
 
         JSONObject data = new JSONObject();
         JSONArray labels = new JSONArray();
-        int i = 1;
+
         for (Statistics stat : statistics) {
             labels.add(stat.getDescription());
         }

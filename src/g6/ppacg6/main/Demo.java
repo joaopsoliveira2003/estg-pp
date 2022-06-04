@@ -106,6 +106,33 @@ public class Demo {
             System.out.println(e);
         }
 
+        Session session3 = new SessionImpl("ESTG Session", theme2,
+                LocalDateTime.of(2022, 7, 7, 14, 0),
+                LocalDateTime.of(2022, 7, 7, 18, 0),
+                room1);
+
+        Presentation presentation4 = new PresentationImpl("Why choose ESTG",
+                LocalDateTime.of(2022, 7, 7, 14, 00),
+                LocalDateTime.of(2022, 7, 7, 14, 30),
+                professor2);
+        Presentation presentation5 = new PresentationImpl("Available Courses",
+                LocalDateTime.of(2022, 7, 7, 15, 00),
+                LocalDateTime.of(2022, 7, 7, 15, 30),
+                professor2);
+
+        try {
+            System.out.println(session3.addPresentation(presentation4));
+            System.out.println(session3.addPresentation(presentation5));
+        } catch (SessionException e) {
+            System.out.println(e);
+        }
+
+        try {
+            System.out.println(conference1.addSession(session3));
+        } catch (ConferenceException e) {
+            System.out.println(e);
+        }
+
         System.out.println("------------------------------------------------------");
         try {
             System.out.println(conference1.addSession(session2));

@@ -80,13 +80,13 @@ public class Equipment {
     }
 
     /**
-     * Compares two equipments, by ID and type of the EquipmentEnum
+     * Compares two equipments, by ID
      * @param obj the equipment to compare
      * False when:
      * Object is null, or not an Equipment
      * True when:
-     * It's the same object, or has the same ID and type of the EquipmentEnum
-     * @return true if the equipments are equal, false otherwise
+     * It's the same object, or has the same ID
+     * @return true if the id is equal, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -98,9 +98,7 @@ public class Equipment {
 
         final Equipment other = (Equipment) obj;
 
-        if (this.id == other.id) return true;
-
-        return this.equipment.equals(other.equipment);
+        return (this.id == other.id);
     }
 
     /**
