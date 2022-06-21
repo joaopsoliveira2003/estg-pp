@@ -1,1 +1,1 @@
-{"data":{"datasets":[{"data":[7.0,5.0],"label":"Participants by Sessions"}],"labels":["ProgrammingDay","ProgrammingDay2"]},"type":"bar"}
+{"data":{"datasets":[{"data":[5.0,3.0,1.0],"label":"Participants by Sessions"}],"labels":["CyberSecurity Today","Advanced Programming","Artificial Intelligence Applied to Business Sciences"]},"type":"bar"}

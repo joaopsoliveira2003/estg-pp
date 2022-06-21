@@ -1,1 +1,1 @@
-{"data":{"datasets":[{"data":[1.0,1.0],"label":"Sessions by Rooms"}],"labels":["P7","P12"]},"type":"bar"}
+{"data":{"datasets":[{"data":[1.0,1.0,1.0],"label":"Sessions by Rooms"}],"labels":["P7","P12","P10"]},"type":"bar"}
